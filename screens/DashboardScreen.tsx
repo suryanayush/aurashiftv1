@@ -1,11 +1,34 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Dimensions, Animated } from 'react-native';
+import { View, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '../context/ThemeContext';
+import { Container } from '../components/Container';
+import { Typography, Card, ThemeToggle } from '../components/ui';
 
-const { width } = Dimensions.get('window');
+interface StatCardProps {
+  title: string;
+  value: string;
+  change: string;
+  icon: string;
+  color?: string;
+}
+
+interface ActionCardProps {
+  title: string;
+  subtitle: string;
+  icon: string;
+  onPress?: () => void;
+}
+
+interface ActivityItemProps {
+  title: string;
+  subtitle: string;
+  time: string;
+  icon: string;
+}
 
 export default function DashboardScreen() {
+  const { colors } = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
 
@@ -24,178 +47,243 @@ export default function DashboardScreen() {
     ]).start();
   }, []);
 
-  const StatCard = ({ title, value, change, icon, color }: any) => (
+  const StatCard = ({ title, value, change, icon }: StatCardProps) => (
     <Animated.View
       style={{
         opacity: fadeAnim,
         transform: [{ translateY: slideAnim }],
       }}
-      className="mr-4 flex-1">
-      <LinearGradient colors={color} className="rounded-2xl p-4 shadow-sm">
+      className="mr-4 w-48">
+      <LinearGradient
+        colors={[colors.primary, colors.primaryLight]}
+        style={{
+          borderRadius: 16,
+          padding: 16,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.15,
+          shadowRadius: 8,
+          elevation: 8,
+        }}>
         <View className="mb-3 flex-row items-start justify-between">
-          <Text className="text-sm font-medium text-white/90">{title}</Text>
-          <Text className="text-2xl">{icon}</Text>
+          <Typography variant="body2" weight="medium" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+            {title}
+          </Typography>
+          <Typography variant="h3" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+            {icon}
+          </Typography>
         </View>
-        <Text className="mb-1 text-2xl font-bold text-white">{value}</Text>
-        <Text className="text-xs text-white/80">{change}</Text>
+        <Typography
+          variant="h2"
+          weight="bold"
+          style={{ color: colors.primaryForeground, marginBottom: 4 }}>
+          {value}
+        </Typography>
+        <Typography variant="caption" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+          {change}
+        </Typography>
       </LinearGradient>
     </Animated.View>
   );
 
-  const ActionCard = ({ title, subtitle, icon, bgColor }: any) => (
-    <TouchableOpacity className="mx-2 mb-4 flex-1">
-      <View className={`${bgColor} rounded-2xl p-6 shadow-sm`}>
+  const ActionCard = ({ title, subtitle, icon, onPress }: ActionCardProps) => (
+    <View className="w-1/2 p-2">
+      <Card variant="elevated" padding="lg" onPress={onPress}>
         <View className="items-center">
-          <Text className="mb-3 text-4xl">{icon}</Text>
-          <Text className="mb-1 text-lg font-semibold text-white">{title}</Text>
-          <Text className="text-center text-sm text-white/80">{subtitle}</Text>
+          <Typography variant="h2" style={{ marginBottom: 12, color: colors.accent }}>
+            {icon}
+          </Typography>
+          <Typography variant="h4" weight="semibold" align="center" style={{ marginBottom: 4 }}>
+            {title}
+          </Typography>
+          <Typography variant="body2" color="secondary" align="center">
+            {subtitle}
+          </Typography>
         </View>
-      </View>
-    </TouchableOpacity>
+      </Card>
+    </View>
   );
 
-  const ActivityItem = ({ title, subtitle, time, icon }: any) => (
+  const ActivityItem = ({ title, subtitle, time, icon }: ActivityItemProps) => (
     <Animated.View
       style={{
         opacity: fadeAnim,
         transform: [{ translateX: slideAnim }],
-      }}
-      className="mb-3 flex-row items-center rounded-xl bg-white p-4 shadow-sm">
-      <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-        <Text className="text-xl">{icon}</Text>
-      </View>
-      <View className="flex-1">
-        <Text className="text-base font-semibold text-gray-800">{title}</Text>
-        <Text className="text-sm text-gray-500">{subtitle}</Text>
-      </View>
-      <Text className="text-xs text-gray-400">{time}</Text>
+      }}>
+      <Card variant="elevated" padding="md" margin="sm">
+        <View className="flex-row items-center">
+          <View
+            className="mr-4 h-12 w-12 items-center justify-center rounded-full"
+            style={{ backgroundColor: colors.backgroundTertiary }}>
+            <Typography variant="h4">{icon}</Typography>
+          </View>
+          <View className="flex-1">
+            <Typography variant="body1" weight="semibold" style={{ marginBottom: 2 }}>
+              {title}
+            </Typography>
+            <Typography variant="body2" color="secondary">
+              {subtitle}
+            </Typography>
+          </View>
+          <Typography variant="caption" color="tertiary">
+            {time}
+          </Typography>
+        </View>
+      </Card>
     </Animated.View>
   );
 
   return (
-    <LinearGradient colors={['#f8fafc', '#e2e8f0']} className="flex-1">
-      <SafeAreaView className="flex-1">
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <Animated.View
-            style={{
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            }}
-            className="px-6 pb-4 pt-6">
-            <View className="mb-8 flex-row items-center justify-between">
-              <View>
-                <Text className="text-base text-gray-500">Welcome back,</Text>
-                <Text className="text-2xl font-bold text-gray-800">John Doe</Text>
-              </View>
-
-              <TouchableOpacity className="h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
-                <Text className="text-xl">🔔</Text>
-              </TouchableOpacity>
+    <Container variant="gradient" padding="none">
+      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          }}
+          className="pb-4 pt-6">
+          <View className="mb-8 flex-row items-center justify-between">
+            <View>
+              <Typography variant="body1" color="secondary">
+                Welcome back,
+              </Typography>
+              <Typography variant="h2" weight="bold">
+                John Doe
+              </Typography>
             </View>
-          </Animated.View>
 
-          <View className="mb-8 px-6">
-            <Text className="mb-4 text-lg font-semibold text-gray-800">Overview</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View className="flex-row">
-                <StatCard
-                  title="Total Sales"
-                  value="$24,500"
-                  change="+12% from last month"
-                  icon="📈"
-                  color={['#3b82f6', '#1d4ed8']}
-                />
-                <StatCard
-                  title="Active Users"
-                  value="1,249"
-                  change="+8% from last week"
-                  icon="👥"
-                  color={['#10b981', '#047857']}
-                />
-                <StatCard
-                  title="Orders"
-                  value="89"
-                  change="+23% from yesterday"
-                  icon="🛒"
-                  color={['#f59e0b', '#d97706']}
-                />
-              </View>
-            </ScrollView>
-          </View>
-
-          <View className="mb-8 px-6">
-            <Text className="mb-4 text-lg font-semibold text-gray-800">Quick Actions</Text>
-            <View className="flex-row flex-wrap">
-              <ActionCard
-                title="Add Product"
-                subtitle="Create new product"
-                icon="➕"
-                bgColor="bg-purple-500"
-              />
-              <ActionCard
-                title="View Analytics"
-                subtitle="Check performance"
-                icon="📊"
-                bgColor="bg-blue-500"
-              />
-              <ActionCard
-                title="Messages"
-                subtitle="Chat with customers"
-                icon="💬"
-                bgColor="bg-green-500"
-              />
-              <ActionCard
-                title="Settings"
-                subtitle="Manage preferences"
-                icon="⚙️"
-                bgColor="bg-gray-600"
-              />
-            </View>
-          </View>
-
-          <View className="mb-8 px-6">
-            <Text className="mb-4 text-lg font-semibold text-gray-800">Recent Activity</Text>
-            <ActivityItem
-              title="New Order Received"
-              subtitle="Order #12345 from Sarah Johnson"
-              time="2 min ago"
-              icon="🛍️"
-            />
-            <ActivityItem
-              title="Product Updated"
-              subtitle="iPhone 15 Pro Max - Stock updated"
-              time="15 min ago"
-              icon="📱"
-            />
-            <ActivityItem
-              title="Customer Review"
-              subtitle="5-star review for Wireless Headphones"
-              time="1 hour ago"
-              icon="⭐"
-            />
-            <ActivityItem
-              title="Payment Received"
-              subtitle="$299.99 from Mike Chen"
-              time="2 hours ago"
-              icon="💳"
-            />
-          </View>
-
-          <View className="px-6 pb-8">
-            <TouchableOpacity>
-              <LinearGradient colors={['#667eea', '#764ba2']} className="rounded-2xl p-4 shadow-lg">
-                <View className="flex-row items-center justify-between">
-                  <View>
-                    <Text className="text-lg font-semibold text-white">Upgrade to Pro</Text>
-                    <Text className="text-sm text-white/80">Unlock premium features</Text>
-                  </View>
-                  <Text className="text-3xl">✨</Text>
-                </View>
-              </LinearGradient>
+            <TouchableOpacity
+              className="shadow-medium h-12 w-12 items-center justify-center rounded-full"
+              style={{ backgroundColor: colors.surface }}>
+              <Typography variant="h4">🔔</Typography>
             </TouchableOpacity>
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </LinearGradient>
+
+          {/* Theme Toggle for Testing */}
+          <View className="mb-6 flex-row items-center justify-between">
+            <Typography variant="body1" color="secondary">
+              Theme Settings:
+            </Typography>
+            <ThemeToggle />
+          </View>
+        </Animated.View>
+
+        {/* Stats Overview */}
+        <View className="mb-8">
+          <Typography variant="h3" weight="semibold" style={{ marginBottom: 16 }}>
+            Overview
+          </Typography>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View className="flex-row">
+              <StatCard
+                title="Total Sales"
+                value="$24,500"
+                change="+12% from last month"
+                icon="📈"
+              />
+              <StatCard title="Active Users" value="1,249" change="+8% from last week" icon="👥" />
+              <StatCard title="Orders" value="89" change="+23% from yesterday" icon="🛒" />
+            </View>
+          </ScrollView>
+        </View>
+
+        {/* Quick Actions */}
+        <View className="mb-8">
+          <Typography variant="h3" weight="semibold" style={{ marginBottom: 16 }}>
+            Quick Actions
+          </Typography>
+          <View className="flex-row flex-wrap">
+            <ActionCard
+              title="Add Product"
+              subtitle="Create new product"
+              icon="➕"
+              onPress={() => {}}
+            />
+            <ActionCard
+              title="View Analytics"
+              subtitle="Check performance"
+              icon="📊"
+              onPress={() => {}}
+            />
+            <ActionCard
+              title="Messages"
+              subtitle="Chat with customers"
+              icon="💬"
+              onPress={() => {}}
+            />
+            <ActionCard
+              title="Settings"
+              subtitle="Manage preferences"
+              icon="⚙️"
+              onPress={() => {}}
+            />
+          </View>
+        </View>
+
+        {/* Recent Activity */}
+        <View className="mb-8">
+          <Typography variant="h3" weight="semibold" style={{ marginBottom: 16 }}>
+            Recent Activity
+          </Typography>
+          <ActivityItem
+            title="New Order Received"
+            subtitle="Order #12345 from Sarah Johnson"
+            time="2 min ago"
+            icon="🛍️"
+          />
+          <ActivityItem
+            title="Product Updated"
+            subtitle="iPhone 15 Pro Max - Stock updated"
+            time="15 min ago"
+            icon="📱"
+          />
+          <ActivityItem
+            title="Customer Review"
+            subtitle="5-star review for Wireless Headphones"
+            time="1 hour ago"
+            icon="⭐"
+          />
+          <ActivityItem
+            title="Payment Received"
+            subtitle="$299.99 from Mike Chen"
+            time="2 hours ago"
+            icon="💳"
+          />
+        </View>
+
+        {/* Upgrade CTA */}
+        <View className="pb-8">
+          <TouchableOpacity>
+            <LinearGradient
+              colors={[colors.accent, colors.primary]}
+              style={{
+                borderRadius: 16,
+                padding: 16,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.15,
+                shadowRadius: 8,
+                elevation: 8,
+              }}>
+              <View className="flex-row items-center justify-between">
+                <View>
+                  <Typography
+                    variant="h4"
+                    weight="semibold"
+                    style={{ color: colors.primaryForeground }}>
+                    Upgrade to Pro
+                  </Typography>
+                  <Typography variant="body2" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    Unlock premium features
+                  </Typography>
+                </View>
+                <Typography variant="h2">✨</Typography>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </Container>
   );
 }

@@ -1,9 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, Animated } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-const { width, height } = Dimensions.get('window');
+import { View, Animated, TouchableOpacity } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
+import { Container } from '../../components/Container';
+import { Button, Typography } from '../../components/ui';
 
 interface OnboardingScreen1Props {
   onNext?: () => void;
@@ -11,6 +10,7 @@ interface OnboardingScreen1Props {
 }
 
 export default function OnboardingScreen1({ onNext, onSkip }: OnboardingScreen1Props) {
+  const { colors, activeTheme } = useTheme();
   const slideAnim = useRef(new Animated.Value(100)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -37,51 +37,124 @@ export default function OnboardingScreen1({ onNext, onSkip }: OnboardingScreen1P
   }, []);
 
   return (
-    <LinearGradient colors={['#667eea', '#764ba2']} className="flex-1">
-      <SafeAreaView className="flex-1">
-        <View className="flex-1 px-6">
+    <Container variant="gradient">
+      <View className="flex-1">
+        {/* Skip Button */}
+        <View className="mt-4 items-end">
           <TouchableOpacity
             onPress={onSkip}
-            className="mt-4 self-end rounded-full bg-white/20 px-4 py-2">
-            <Text className="font-medium text-white">Skip</Text>
-          </TouchableOpacity>
-
-          <Animated.View
+            className="rounded-full px-4 py-2"
             style={{
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }, { scale: scaleAnim }],
-            }}
-            className="flex-1 items-center justify-center">
-            <View className="mb-16 h-64 w-64 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
-              <View className="h-48 w-48 items-center justify-center rounded-full bg-white/20">
-                <Text className="text-8xl">🚀</Text>
-              </View>
-            </View>
-
-            <Text className="mb-6 text-center text-4xl font-bold tracking-wide text-white">
-              Get Started
-            </Text>
-
-            <Text className="mb-16 px-4 text-center text-lg leading-relaxed text-white/90">
-              Discover amazing features and unlock your potential with our innovative platform
-              designed for success
-            </Text>
-
-            <View className="mb-8 flex-row space-x-3">
-              <View className="h-2 w-8 rounded-full bg-white" />
-              <View className="h-2 w-2 rounded-full bg-white/40" />
-              <View className="h-2 w-2 rounded-full bg-white/40" />
-              <View className="h-2 w-2 rounded-full bg-white/40" />
-            </View>
-          </Animated.View>
-
-          <TouchableOpacity onPress={onNext} className="mb-8">
-            <LinearGradient colors={['#ffffff', '#f8fafc']} className="rounded-2xl py-4 shadow-lg">
-              <Text className="text-center text-lg font-semibold text-purple-600">Continue</Text>
-            </LinearGradient>
+              backgroundColor:
+                activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+            }}>
+            <Typography
+              variant="body2"
+              weight="medium"
+              style={{
+                color: activeTheme === 'dark' ? colors.text : colors.primaryForeground,
+              }}>
+              Skip
+            </Typography>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
-    </LinearGradient>
+
+        {/* Main Content */}
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }, { scale: scaleAnim }],
+          }}
+          className="flex-1 items-center justify-center">
+          {/* Illustration */}
+          <View
+            className="shadow-large mb-16 h-64 w-64 items-center justify-center rounded-full"
+            style={{
+              backgroundColor:
+                activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.15)',
+            }}>
+            <View
+              className="h-48 w-48 items-center justify-center rounded-full"
+              style={{
+                backgroundColor:
+                  activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.25)',
+              }}>
+              <Typography variant="h1" style={{ fontSize: 80, lineHeight: 80 }}>
+                🚀
+              </Typography>
+            </View>
+          </View>
+
+          {/* Title */}
+          <Typography
+            variant="h1"
+            weight="bold"
+            align="center"
+            style={{
+              color: activeTheme === 'dark' ? colors.text : colors.primaryForeground,
+              marginBottom: 24,
+              letterSpacing: 1,
+            }}>
+            Get Started
+          </Typography>
+
+          {/* Description */}
+          <Typography
+            variant="body1"
+            align="center"
+            style={{
+              color: activeTheme === 'dark' ? colors.textSecondary : 'rgba(255, 255, 255, 0.9)',
+              paddingHorizontal: 16,
+              lineHeight: 28,
+              marginBottom: 64,
+            }}>
+            Discover amazing features and unlock your potential with our innovative platform
+            designed for success
+          </Typography>
+
+          {/* Progress Indicator */}
+          <View className="mb-8 flex-row space-x-3">
+            <View
+              className="h-2 w-8 rounded-full"
+              style={{
+                backgroundColor: activeTheme === 'dark' ? colors.accent : colors.primaryForeground,
+              }}
+            />
+            <View
+              className="h-2 w-2 rounded-full"
+              style={{
+                backgroundColor:
+                  activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.4)',
+              }}
+            />
+            <View
+              className="h-2 w-2 rounded-full"
+              style={{
+                backgroundColor:
+                  activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.4)',
+              }}
+            />
+            <View
+              className="h-2 w-2 rounded-full"
+              style={{
+                backgroundColor:
+                  activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.4)',
+              }}
+            />
+          </View>
+        </Animated.View>
+
+        {/* Continue Button */}
+        <View className="mb-8">
+          <Button
+            title="Continue"
+            onPress={onNext}
+            variant={activeTheme === 'dark' ? 'primary' : 'secondary'}
+            size="lg"
+            fullWidth
+          />
+        </View>
+      </View>
+    </Container>
   );
 }

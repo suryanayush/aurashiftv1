@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
-import { View, Text, Animated, Dimensions } from 'react-native';
+import { View, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const { width, height } = Dimensions.get('window');
+import { useTheme } from '../context/ThemeContext';
+import { Typography } from '../components/ui';
 
 interface SplashScreenProps {
   onAnimationComplete?: () => void;
 }
 
 export default function SplashScreen({ onAnimationComplete }: SplashScreenProps) {
+  const { colors, activeTheme } = useTheme();
   const fadeAnim = new Animated.Value(0);
   const scaleAnim = new Animated.Value(0.3);
   const slideAnim = new Animated.Value(50);
@@ -40,49 +41,95 @@ export default function SplashScreen({ onAnimationComplete }: SplashScreenProps)
     });
   }, []);
 
+  const gradientColors =
+    activeTheme === 'dark'
+      ? [colors.backgroundSecondary, colors.backgroundTertiary] as const
+      : [colors.primary, colors.primaryLight] as const;
+
   return (
-    <LinearGradient colors={['#667eea', '#764ba2']} className="flex-1 items-center justify-center">
+    <LinearGradient
+      colors={gradientColors}
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
       <Animated.View
         style={{
           opacity: fadeAnim,
           transform: [{ scale: scaleAnim }, { translateY: slideAnim }],
         }}
         className="items-center">
-        <View className="mb-8 h-32 w-32 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-          <View className="h-20 w-20 items-center justify-center rounded-full bg-white">
-            <Text className="text-4xl font-bold text-purple-600">A</Text>
+        {/* Logo Container */}
+        <View
+          className="shadow-large mb-12 h-32 w-32 items-center justify-center rounded-4xl"
+          style={{
+            backgroundColor:
+              activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+          }}>
+          <View
+            className="h-20 w-20 items-center justify-center rounded-3xl"
+            style={{ backgroundColor: colors.surface }}>
+            <Typography
+              variant="h1"
+              weight="bold"
+              style={{
+                color: colors.primary,
+                fontSize: 36,
+              }}>
+              A
+            </Typography>
           </View>
         </View>
 
-        <Text className="mb-4 text-4xl font-bold tracking-wide text-white">AppName</Text>
+        {/* App Name */}
+        <Typography
+          variant="h1"
+          weight="bold"
+          align="center"
+          style={{
+            color: colors.primaryForeground,
+            marginBottom: 16,
+            letterSpacing: 1,
+          }}>
+          AppName
+        </Typography>
 
-        <Text className="px-8 text-center text-lg leading-relaxed text-white/80">
-          Your journey begins here
-        </Text>
+        {/* Subtitle */}
+        <Typography
+          variant="body1"
+          align="center"
+          style={{
+            color: activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+            paddingHorizontal: 32,
+            lineHeight: 24,
+            marginBottom: 64,
+          }}>
+          Your professional journey begins here
+        </Typography>
 
-        <View className="mt-16">
-          <Animated.View
-            style={{
-              opacity: fadeAnim,
-            }}>
-            <View className="flex-row space-x-2">
-              {[0, 1, 2].map((index) => (
-                <Animated.View
-                  key={index}
-                  style={{
-                    opacity: fadeAnim,
-                    transform: [
-                      {
-                        scale: scaleAnim,
-                      },
-                    ],
-                  }}
-                  className="h-2 w-2 rounded-full bg-white/60"
-                />
-              ))}
-            </View>
-          </Animated.View>
-        </View>
+        {/* Loading Animation */}
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+          }}>
+          <View className="flex-row space-x-2">
+            {[0, 1, 2].map((index) => (
+              <Animated.View
+                key={index}
+                style={{
+                  opacity: fadeAnim,
+                  transform: [{ scale: scaleAnim }],
+                  backgroundColor:
+                    activeTheme === 'dark'
+                      ? 'rgba(255, 255, 255, 0.6)'
+                      : 'rgba(255, 255, 255, 0.8)',
+                }}
+                className="h-2 w-2 rounded-full"
+              />
+            ))}
+          </View>
+        </Animated.View>
       </Animated.View>
     </LinearGradient>
   );
