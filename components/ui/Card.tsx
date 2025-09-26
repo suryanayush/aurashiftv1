@@ -5,7 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 export interface CardProps {
   children: React.ReactNode;
   onPress?: () => void;
-  variant?: 'default' | 'elevated' | 'outlined';
+  variant?: 'default' | 'elevated' | 'outlined' | 'glass';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   margin?: 'none' | 'sm' | 'md' | 'lg';
 }
@@ -53,8 +53,24 @@ export function Card({
         return {
           backgroundColor: colors.surface,
           shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: activeTheme === 'dark' ? 0.4 : 0.15,
+          shadowRadius: 12,
+          elevation: 12,
+          borderWidth: activeTheme === 'dark' ? 1 : 0,
+          borderColor: activeTheme === 'dark' ? colors.border : 'transparent',
+        };
+      case 'glass':
+        return {
+          backgroundColor:
+            activeTheme === 'dark' ? 'rgba(26, 27, 58, 0.7)' : 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(10px)',
+          borderWidth: 1,
+          borderColor:
+            activeTheme === 'dark' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(107, 70, 193, 0.1)',
+          shadowColor: colors.primary,
           shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: activeTheme === 'dark' ? 0.3 : 0.1,
+          shadowOpacity: 0.1,
           shadowRadius: 8,
           elevation: 8,
         };

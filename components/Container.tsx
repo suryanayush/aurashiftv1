@@ -38,8 +38,8 @@ export const Container = ({
   if (variant === 'gradient') {
     const gradientColors =
       activeTheme === 'dark'
-        ? [colors.background, colors.backgroundSecondary] as const
-        : [colors.background, colors.backgroundSecondary] as const;
+        ? ([colors.background, colors.backgroundSecondary, colors.backgroundTertiary] as const)
+        : ([colors.background, colors.backgroundSecondary, colors.backgroundTertiary] as const);
 
     return (
       <LinearGradient colors={gradientColors} style={{ flex: 1 }}>

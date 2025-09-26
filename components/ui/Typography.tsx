@@ -34,7 +34,8 @@ export function Typography({
           ...baseStyles,
           fontSize: 32,
           lineHeight: 40,
-          fontWeight: 'bold',
+          fontWeight: '700',
+          letterSpacing: -0.5,
         };
       case 'h2':
         return {

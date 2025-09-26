@@ -44,67 +44,67 @@ export interface ThemeColors {
 }
 
 const lightTheme: ThemeColors = {
-  // Light theme: white and dark blue
-  background: '#FFFFFF',
-  backgroundSecondary: '#F8FAFC',
-  backgroundTertiary: '#F1F5F9',
+  // Light theme: Vibrant purple with coral accents
+  background: '#FAFAFA',
+  backgroundSecondary: '#F3F4F6',
+  backgroundTertiary: '#E5E7EB',
 
   surface: '#FFFFFF',
-  surfaceSecondary: '#F8FAFC',
+  surfaceSecondary: 'rgba(255, 255, 255, 0.8)',
 
-  text: '#1E293B',
-  textSecondary: '#475569',
-  textTertiary: '#64748B',
+  text: '#1F2937',
+  textSecondary: '#4B5563',
+  textTertiary: '#6B7280',
 
-  primary: '#1E3A8A', // Dark blue
+  primary: '#6B46C1', // Deep purple
   primaryForeground: '#FFFFFF',
-  primaryLight: '#3B82F6',
+  primaryLight: '#A855F7',
 
-  accent: '#2563EB',
+  accent: '#F97316', // Warm orange
   accentForeground: '#FFFFFF',
 
-  border: '#E2E8F0',
-  divider: '#E2E8F0',
+  border: '#D1D5DB',
+  divider: '#E5E7EB',
 
   success: '#10B981',
   warning: '#F59E0B',
   error: '#EF4444',
-  info: '#3B82F6',
+  info: '#0EA5E9',
 
-  overlay: 'rgba(0, 0, 0, 0.5)',
-  shadow: 'rgba(0, 0, 0, 0.1)',
+  overlay: 'rgba(107, 70, 193, 0.2)',
+  shadow: 'rgba(107, 70, 193, 0.15)',
 };
 
 const darkTheme: ThemeColors = {
-  // Dark theme: dark blue and gray
-  background: '#0F172A',
-  backgroundSecondary: '#1E293B',
-  backgroundTertiary: '#334155',
+  // Dark theme: Deep navy to purple gradient with neon accents
+  background: '#0F0F23', // Deep navy
+  backgroundSecondary: '#1A1B3A', // Navy purple
+  backgroundTertiary: '#2D1B69', // Deep purple
 
-  surface: '#1E293B',
-  surfaceSecondary: '#334155',
+  surface: 'rgba(26, 27, 58, 0.8)', // Glass-morphism
+  surfaceSecondary: 'rgba(45, 27, 105, 0.6)',
 
-  text: '#F8FAFC',
-  textSecondary: '#CBD5E1',
-  textTertiary: '#94A3B8',
+  text: '#FFFFFF',
+  textSecondary: '#E2E8F0',
+  textTertiary: '#CBD5E1',
 
-  primary: '#3B82F6', // Lighter blue for dark mode
+  primary: '#A855F7', // Electric purple
   primaryForeground: '#FFFFFF',
-  primaryLight: '#60A5FA',
+  primaryLight: '#C084FC',
 
-  accent: '#60A5FA',
+  accent: '#FB7185', // Warm pink-coral
   accentForeground: '#FFFFFF',
 
-  border: '#475569',
-  divider: '#475569',
+  border: 'rgba(168, 85, 247, 0.2)',
+  divider: 'rgba(168, 85, 247, 0.15)',
 
-  success: '#10B981',
-  warning: '#F59E0B',
-  error: '#EF4444',
+  success: '#22D3EE', // Electric cyan
+  warning: '#FBBF24',
+  error: '#F87171',
   info: '#60A5FA',
 
-  overlay: 'rgba(0, 0, 0, 0.7)',
-  shadow: 'rgba(0, 0, 0, 0.3)',
+  overlay: 'rgba(15, 15, 35, 0.8)',
+  shadow: 'rgba(168, 85, 247, 0.3)',
 };
 
 interface ThemeContextType {

@@ -101,14 +101,19 @@ export function Button({
           colors={
             isDisabled
               ? [colors.backgroundTertiary, colors.backgroundTertiary]
-              : [colors.primary, colors.primaryLight]
+              : [colors.primary, colors.primaryLight, colors.accent]
           }
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
+          end={{ x: 1, y: 1 }}
           style={{
             paddingHorizontal: size === 'sm' ? 16 : size === 'lg' ? 32 : 24,
             paddingVertical: size === 'sm' ? 8 : size === 'lg' ? 16 : 12,
             borderRadius: 16,
+            shadowColor: colors.primary,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            elevation: 8,
           }}>
           <ButtonContent />
         </LinearGradient>

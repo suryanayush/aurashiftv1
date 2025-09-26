@@ -43,8 +43,8 @@ export default function SplashScreen({ onAnimationComplete }: SplashScreenProps)
 
   const gradientColors =
     activeTheme === 'dark'
-      ? [colors.backgroundSecondary, colors.backgroundTertiary] as const
-      : [colors.primary, colors.primaryLight] as const;
+      ? ([colors.background, colors.backgroundSecondary, colors.backgroundTertiary] as const)
+      : ([colors.primary, colors.primaryLight, colors.accent] as const);
 
   return (
     <LinearGradient
@@ -62,22 +62,35 @@ export default function SplashScreen({ onAnimationComplete }: SplashScreenProps)
         className="items-center">
         {/* Logo Container */}
         <View
-          className="shadow-large mb-12 h-32 w-32 items-center justify-center rounded-4xl"
+          className="shadow-large mb-12 h-36 w-36 items-center justify-center rounded-4xl"
           style={{
             backgroundColor:
-              activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+              activeTheme === 'dark' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255, 255, 255, 0.25)',
+            borderWidth: 2,
+            borderColor:
+              activeTheme === 'dark' ? 'rgba(168, 85, 247, 0.3)' : 'rgba(255, 255, 255, 0.4)',
           }}>
           <View
-            className="h-20 w-20 items-center justify-center rounded-3xl"
-            style={{ backgroundColor: colors.surface }}>
+            className="h-24 w-24 items-center justify-center rounded-3xl"
+            style={{
+              backgroundColor: colors.surface,
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+            }}>
             <Typography
               variant="h1"
               weight="bold"
               style={{
                 color: colors.primary,
-                fontSize: 36,
+                fontSize: 42,
+                textShadowColor: 'rgba(0,0,0,0.1)',
+                textShadowOffset: { width: 1, height: 1 },
+                textShadowRadius: 2,
               }}>
-              A
+              ✨
             </Typography>
           </View>
         </View>
@@ -90,9 +103,13 @@ export default function SplashScreen({ onAnimationComplete }: SplashScreenProps)
           style={{
             color: colors.primaryForeground,
             marginBottom: 16,
-            letterSpacing: 1,
+            letterSpacing: 1.2,
+            fontSize: 38,
+            textShadowColor: 'rgba(0,0,0,0.2)',
+            textShadowOffset: { width: 2, height: 2 },
+            textShadowRadius: 4,
           }}>
-          AppName
+          Nexus
         </Typography>
 
         {/* Subtitle */}
@@ -100,12 +117,15 @@ export default function SplashScreen({ onAnimationComplete }: SplashScreenProps)
           variant="body1"
           align="center"
           style={{
-            color: activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+            color:
+              activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.95)',
             paddingHorizontal: 32,
-            lineHeight: 24,
+            lineHeight: 26,
             marginBottom: 64,
+            fontSize: 18,
+            fontWeight: '500',
           }}>
-          Your professional journey begins here
+          Where innovation meets excellence
         </Typography>
 
         {/* Loading Animation */}

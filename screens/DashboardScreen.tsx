@@ -55,15 +55,19 @@ export default function DashboardScreen() {
       }}
       className="mr-4 w-48">
       <LinearGradient
-        colors={[colors.primary, colors.primaryLight]}
+        colors={[colors.primary, colors.primaryLight, colors.accent]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={{
-          borderRadius: 16,
-          padding: 16,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.15,
-          shadowRadius: 8,
-          elevation: 8,
+          borderRadius: 20,
+          padding: 20,
+          shadowColor: colors.primary,
+          shadowOffset: { width: 0, height: 12 },
+          shadowOpacity: 0.4,
+          shadowRadius: 16,
+          elevation: 16,
+          borderWidth: 2,
+          borderColor: 'rgba(255, 255, 255, 0.2)',
         }}>
         <View className="mb-3 flex-row items-start justify-between">
           <Typography variant="body2" weight="medium" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
@@ -88,7 +92,7 @@ export default function DashboardScreen() {
 
   const ActionCard = ({ title, subtitle, icon, onPress }: ActionCardProps) => (
     <View className="w-1/2 p-2">
-      <Card variant="elevated" padding="lg" onPress={onPress}>
+      <Card variant="glass" padding="lg" onPress={onPress}>
         <View className="items-center">
           <Typography variant="h2" style={{ marginBottom: 12, color: colors.accent }}>
             {icon}
@@ -110,11 +114,18 @@ export default function DashboardScreen() {
         opacity: fadeAnim,
         transform: [{ translateX: slideAnim }],
       }}>
-      <Card variant="elevated" padding="md" margin="sm">
+      <Card variant="glass" padding="md" margin="sm">
         <View className="flex-row items-center">
           <View
             className="mr-4 h-12 w-12 items-center justify-center rounded-full"
-            style={{ backgroundColor: colors.backgroundTertiary }}>
+            style={{
+              backgroundColor: colors.primary,
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+            }}>
             <Typography variant="h4">{icon}</Typography>
           </View>
           <View className="flex-1">
@@ -256,15 +267,19 @@ export default function DashboardScreen() {
         <View className="pb-8">
           <TouchableOpacity>
             <LinearGradient
-              colors={[colors.accent, colors.primary]}
+              colors={[colors.accent, colors.primary, colors.primaryLight]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
               style={{
-                borderRadius: 16,
-                padding: 16,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.15,
-                shadowRadius: 8,
-                elevation: 8,
+                borderRadius: 20,
+                padding: 20,
+                shadowColor: colors.accent,
+                shadowOffset: { width: 0, height: 12 },
+                shadowOpacity: 0.4,
+                shadowRadius: 16,
+                elevation: 16,
+                borderWidth: 2,
+                borderColor: 'rgba(255, 255, 255, 0.2)',
               }}>
               <View className="flex-row items-center justify-between">
                 <View>

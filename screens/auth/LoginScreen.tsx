@@ -90,29 +90,42 @@ export default function LoginScreen({ onLoginSuccess, onNavigateToRegister }: Lo
             {/* Header */}
             <View className="mb-12 items-center">
               <View
-                className="shadow-large mb-8 h-28 w-28 items-center justify-center rounded-4xl"
-                style={{ backgroundColor: colors.primary }}>
+                className="shadow-large mb-8 h-32 w-32 items-center justify-center rounded-4xl"
+                style={{
+                  backgroundColor: colors.primary,
+                  shadowColor: colors.primary,
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 12,
+                  elevation: 12,
+                  borderWidth: 3,
+                  borderColor: colors.primaryLight,
+                }}>
                 <Typography
                   variant="h1"
                   weight="bold"
-                  style={{ color: colors.primaryForeground, fontSize: 36 }}>
-                  👋
+                  style={{ color: colors.primaryForeground, fontSize: 48 }}>
+                  🚀
                 </Typography>
               </View>
-              <Typography variant="h1" weight="bold" align="center" style={{ marginBottom: 16 }}>
+              <Typography
+                variant="h1"
+                weight="bold"
+                align="center"
+                style={{ marginBottom: 16, fontSize: 36 }}>
                 Welcome Back
               </Typography>
               <Typography
                 variant="body1"
                 color="secondary"
                 align="center"
-                style={{ paddingHorizontal: 16, lineHeight: 24 }}>
-                Sign in to your account and continue your journey
+                style={{ paddingHorizontal: 16, lineHeight: 26, fontSize: 18 }}>
+                Ready to launch into your next adventure?
               </Typography>
             </View>
 
             {/* Login Form */}
-            <Card variant="elevated" padding="lg" margin="sm">
+            <Card variant="glass" padding="lg" margin="sm">
               <Input
                 label="Email Address"
                 placeholder="Enter your email"
