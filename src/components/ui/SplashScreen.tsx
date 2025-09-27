@@ -23,9 +23,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationFinish }) => {
     <View className="flex-1 bg-white">
       {/* Background Design */}
       <View className="absolute inset-0">
-        {/* Top curved background */}
-        <View className="absolute top-0 left-0 right-0 h-2/3 bg-red-400" style={{ borderBottomLeftRadius: 60 }} />
-        
         {/* Decorative circles */}
         <View className="absolute top-20 right-8 w-20 h-20 bg-red-300 rounded-full" style={{ opacity: 0.3 }} />
         <View className="absolute top-40 left-12 w-12 h-12 bg-red-200 rounded-full" style={{ opacity: 0.4 }} />
