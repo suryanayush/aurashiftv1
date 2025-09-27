@@ -130,7 +130,6 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             <Text className="text-black text-center mb-8">
               Help us understand your smoking background
             </Text>
-            
             <View className="mb-6">
               <Text className="text-black font-medium mb-2">How many years have you been smoking?</Text>
               <TextInput

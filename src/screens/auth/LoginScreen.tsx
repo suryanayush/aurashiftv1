@@ -56,7 +56,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onSwitchToReg
         className="flex-1 px-6 -mt-6"
       >
         {/* Login Card */}
-        <View className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+        <View className="bg-white rounded-3xl p-8 mt-16 shadow-xl border border-gray-100">
           <View className="items-center mb-8">
             <View className="w-16 h-16 bg-red-100 rounded-2xl items-center justify-center mb-4">
               <View className="w-8 h-8 bg-red-400 rounded-xl" />
