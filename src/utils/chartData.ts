@@ -61,10 +61,10 @@ export const TREND_COLORS = {
 
 // Filter labels for display
 export const FILTER_LABELS = {
-  aura_score: 'Aura Score',
-  cigarettes_avoided: 'Cigarettes Avoided',
-  cigarettes_consumed: 'Cigarettes Consumed',
-  money_saved: 'Money Saved',
+  aura_score: 'Score',
+  cigarettes_avoided: 'Avoided',
+  cigarettes_consumed: 'Consumed',
+  money_saved: 'Savings',
 } as const;
 
 // Get multi-series chart data for specific timeframe

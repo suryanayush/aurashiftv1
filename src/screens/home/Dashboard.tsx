@@ -144,20 +144,6 @@ const MultiSeriesBarChart = React.memo(({ data, activeFilters }: { data: MultiSe
         ))}
       </View>
       
-      {/* Value indicators */}
-      <View className="mt-3 px-2">
-        <Text className="text-xs text-gray-400 text-center">
-          Max: {overallMax.toLocaleString()} • Showing {activeFilters.length} series
-        </Text>
-        {/* Debug info */}
-        <View className="mt-2">
-          {activeFilters.map((filter) => (
-            <Text key={filter} className="text-xs text-gray-500 text-center">
-              {FILTER_LABELS[filter]}: {data.series[filter].join(', ')}
-            </Text>
-          ))}
-        </View>
-      </View>
     </View>
   );
 });
