@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import authRoutes from './auth';
 import onboardingRoutes from './onboarding';
+import dashboardRoutes from './dashboard';
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.get('/health', (req, res) => {
 // API routes
 router.use('/auth', authRoutes);
 router.use('/onboarding', onboardingRoutes);
+router.use('/dashboard', dashboardRoutes);
 
 export default router;

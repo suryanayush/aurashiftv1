@@ -20,6 +20,7 @@ import {
 } from 'lucide-react-native';
 import { generateDashboardData } from '../../utils/dashboardData';
 import { storage } from '../../utils/storage';
+import { dashboardAPI, DashboardUser } from '../../api/dashboard';
 import { 
   getProgressChartData, 
   TREND_COLORS, 
@@ -152,6 +153,7 @@ const MultiSeriesBarChart = React.memo(({ data, activeFilters }: { data: MultiSe
 
 const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [userData, setUserData] = useState<DashboardUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   
@@ -182,9 +184,16 @@ const Dashboard: React.FC = () => {
       // Initialize sample data if needed
       await storage.initializeSampleData();
       
-      // Load dashboard data from storage
+      // Load dashboard data from storage (for charts and activities)
       const data = await generateDashboardData();
       setDashboardData(data);
+
+      const userResponse = await dashboardAPI.getStats();
+      if (userResponse.success && userResponse.data) {
+        setUserData(userResponse.data);
+      } else {
+        console.error('Failed to fetch user data:', userResponse.error);
+      }
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       Alert.alert('Error', 'Failed to load dashboard data');
@@ -246,9 +255,11 @@ const Dashboard: React.FC = () => {
         <View className="bg-red-400 pt-16 pb-8" style={{ borderBottomLeftRadius: 40, borderBottomRightRadius: 40 }}>
           <View className="px-6 flex-row justify-between items-center">
             <View>
-              <Text className="text-white text-2xl font-bold">Hi, {dashboardData.user.displayName.split(' ')[0]}!</Text>
+              <Text className="text-white text-2xl font-bold">
+                Hi, {userData ? userData.displayName.split(' ')[0] : dashboardData.user.displayName.split(' ')[0]}!
+              </Text>
               <Text className="text-red-100 text-base mt-1">
-                Level {dashboardData.user.level} • {dashboardData.user.auraScore} Points
+                Level {userData ? userData.stats.level : dashboardData.user.level} • {userData ? userData.auraScore : dashboardData.user.auraScore} Points
               </Text>
             </View>
             <TouchableOpacity className="w-12 h-12 bg-white/20 rounded-2xl items-center justify-center">
@@ -262,7 +273,10 @@ const Dashboard: React.FC = () => {
           <View className="items-center">
             <Text className="text-gray-500 text-sm font-medium mb-4">Smoke-Free Timer</Text>
             {(() => {
-              const realTimeTimer = calculateRealTimeTimer(dashboardData.timer.startTime);
+              const timerStartTime = userData?.streakStartTime 
+                ? new Date(userData.streakStartTime) 
+                : dashboardData.timer.startTime;
+              const realTimeTimer = calculateRealTimeTimer(timerStartTime);
               return (
                 <>
                   <View className="flex-row items-center justify-center mb-3">
@@ -329,7 +343,9 @@ const Dashboard: React.FC = () => {
               <View className="w-10 h-10 bg-green-200 rounded-xl items-center justify-center mb-3">
                 <Cigarette size={20} color="#22c55e" />
               </View>
-              <Text className="text-2xl font-bold text-gray-900">{dashboardData.progress.cigarettesAvoided}</Text>
+              <Text className="text-2xl font-bold text-gray-900">
+                {userData ? userData.stats.cigarettesAvoided : dashboardData.progress.cigarettesAvoided}
+              </Text>
               <Text className="text-gray-600 text-xs text-center">Cigarettes avoided</Text>
             </View>
 
@@ -338,7 +354,9 @@ const Dashboard: React.FC = () => {
               <View className="w-10 h-10 bg-blue-200 rounded-xl items-center justify-center mb-3">
                 <DollarSign size={20} color="#3b82f6" />
               </View>
-              <Text className="text-2xl font-bold text-gray-900">₹ {dashboardData.progress.moneySaved}</Text>
+              <Text className="text-2xl font-bold text-gray-900">
+                ₹ {userData ? userData.stats.moneySaved : dashboardData.progress.moneySaved}
+              </Text>
               <Text className="text-gray-600 text-xs text-center">Total money saved</Text>
             </View>
 
@@ -347,7 +365,9 @@ const Dashboard: React.FC = () => {
               <View className="w-10 h-10 bg-red-200 rounded-xl items-center justify-center mb-3">
                 <Heart size={20} color="#ef4444" />
               </View>
-              <Text className="text-2xl font-bold text-gray-900">{dashboardData.progress.streakDays}</Text>
+              <Text className="text-2xl font-bold text-gray-900">
+                {userData ? userData.stats.smokeFreeTime : dashboardData.progress.streakDays}
+              </Text>
               <Text className="text-gray-600 text-xs text-center">Days smoke free</Text>
             </View>
           </View>
