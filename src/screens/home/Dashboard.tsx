@@ -366,39 +366,7 @@ const Dashboard: React.FC = () => {
               </View>
             </View>
 
-            {/* Filter Indicators */}
-            <View className="mb-6 px-2">
-              <View className="flex-row flex-wrap justify-center items-center gap-x-3 gap-y-2">
-                {Object.entries(FILTER_LABELS).map(([filter, label]) => {
-                  const isActive = activeFilters.includes(filter as FilterType);
-                  return (
-                    <TouchableOpacity
-                      key={filter}
-                      className={`flex-row items-center gap-2 px-3 py-2 rounded-xl ${
-                        isActive ? 'bg-gray-50' : 'bg-transparent'
-                      }`}
-                      onPress={() => toggleFilter(filter as FilterType)}
-                      activeOpacity={0.7}
-                    >
-                      <View 
-                        className="w-3 h-3 rounded-full"
-                        style={{ 
-                          backgroundColor: isActive 
-                            ? TREND_COLORS[filter as FilterType]() 
-                            : '#d1d5db'
-                        }}
-                      />
-                      <Text className={`text-xs font-medium ${
-                        isActive ? 'text-gray-900' : 'text-gray-500'
-                      }`}>
-                        {label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </View>
-
+         
             {/* Chart Container */}
             <View 
               style={{
