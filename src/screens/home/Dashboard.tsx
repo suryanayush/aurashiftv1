@@ -168,7 +168,7 @@ const Dashboard: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   
   // Simplified chart state management
-  const [timeRange, setTimeRange] = useState<TimeRange>('7d');
+  const [timeRange, setTimeRange] = useState<TimeRange>('4d');
   const [activeFilters, setActiveFilters] = useState<FilterType[]>(DEFAULT_ACTIVE_FILTERS);
 
   // Real-time timer calculation

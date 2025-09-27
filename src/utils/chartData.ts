@@ -17,18 +17,18 @@ export interface MultiSeriesData {
   };
 }
 
-export type TimeRange = '7d' | '30d' | '90d';
+export type TimeRange = '4d' | '30d' | '90d';
 export type FilterType = 'aura_score' | 'cigarettes_avoided' | 'cigarettes_consumed' | 'money_saved';
 
 // Multi-series chart data for different timeframes
 const CHART_DATA: Record<TimeRange, MultiSeriesData> = {
-  '7d': {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  '4d': {
+    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4'],
     series: {
-      aura_score: [15, 25, 35, 48, 58, 68, 78],
-      cigarettes_avoided: [2, 5, 8, 12, 15, 18, 22],
-      cigarettes_consumed: [8, 6, 4, 3, 2, 1, 0],
-      money_saved: [12, 24, 36, 48, 60, 72, 84],
+      aura_score: [15, 35, 58, 78],
+      cigarettes_avoided: [2, 8, 15, 22],
+      cigarettes_consumed: [8, 4, 2, 0],
+      money_saved: [12, 36, 60, 84],
     },
   },
   '30d': {
@@ -68,13 +68,13 @@ export const FILTER_LABELS = {
 } as const;
 
 // Get multi-series chart data for specific timeframe
-export const getProgressChartData = (timeRange: TimeRange = '7d'): MultiSeriesData => {
-  return CHART_DATA[timeRange] || CHART_DATA['7d'];
+export const getProgressChartData = (timeRange: TimeRange = '4d'): MultiSeriesData => {
+  return CHART_DATA[timeRange] || CHART_DATA['4d'];
 };
 
 // Time range options
 export const TIME_RANGE_OPTIONS = [
-  { value: '7d' as TimeRange, label: '7 Days' },
+  { value: '4d' as TimeRange, label: '4 Days' },
   { value: '30d' as TimeRange, label: '30 Days' },
   { value: '90d' as TimeRange, label: '90 Days' },
 ];
