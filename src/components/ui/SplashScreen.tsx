@@ -32,7 +32,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationFinish }) => {
       {/* Content */}
       <View className="flex-1 justify-center items-center px-8">
         {/* App Logo/Animation */}
-        <View className="bg-white rounded-3xl p-8 shadow-2xl mb-8">
           <LottieView
             ref={animationRef}
             source={require('../../../assets/happyLungs.json')}
@@ -45,11 +44,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationFinish }) => {
             onAnimationFinish={handleAnimationFinish}
             resizeMode="contain"
           />
-        </View>
 
         {/* App Title */}
         <Text className="text-4xl font-bold text-white mb-3">AuraShift</Text>
-        <Text className="text-lg text-red-100 text-center leading-6">
+        <Text className="text-lg text-red-400 text-center leading-6">
           Your journey to a{'\n'}smoke-free life begins here
         </Text>
 
