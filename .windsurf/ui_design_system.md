@@ -20,13 +20,14 @@
 ### 2.1 Primary Colors
 ```typescript
 export const colors = {
-  // Primary Brand Colors
+  // Primary Brand Colors (AuraShift Red Theme)
   primary: {
-    50: '#F0F4FF',   // Very light blue
-    100: '#E0ECFF',  // Light blue
-    500: '#6366F1',  // Primary indigo
-    600: '#4F46E5',  // Darker indigo
-    700: '#4338CA',  // Deep indigo
+    50: '#FEF2F2',   // Very light red
+    100: '#FEE2E2',  // Light red  
+    400: '#F87171',  // Medium red
+    500: '#EF4444',  // Primary red
+    600: '#DC2626',  // Darker red
+    700: '#B91C1C',  // Deep red
   },
   
   // Secondary Colors
@@ -86,29 +87,37 @@ export const colors = {
 export const activityColors = {
   cigarette: {
     background: '#FEF2F2', // Light red background
-    icon: '#EF4444',       // Red icon
+    icon: '#DC2626',       // Bright red icon
     border: '#FECACA',     // Light red border
   },
   gym: {
-    background: '#F0FDF4', // Light green background
-    icon: '#22C55E',       // Green icon
-    border: '#BBF7D0',     // Light green border
+    background: '#FEF3C7', // Light yellow background
+    icon: '#EAB308',       // Yellow icon (updated)
+    border: '#FDE68A',     // Light yellow border
   },
   healthy_meal: {
-    background: '#FFFBEB', // Light amber background
-    icon: '#F59E0B',       // Amber icon
-    border: '#FED7AA',     // Light amber border
+    background: '#ECFDF5', // Light emerald background
+    icon: '#10B981',       // Emerald icon (updated)
+    border: '#A7F3D0',     // Light emerald border
   },
   skincare: {
-    background: '#FDF4FF', // Light purple background
-    icon: '#A855F7',       // Purple icon
+    background: '#FAF5FF', // Light purple background
+    icon: '#8B5CF6',       // Purple icon (updated)
     border: '#E9D5FF',     // Light purple border
   },
   event_social: {
-    background: '#F0F4FF', // Light blue background
-    icon: '#6366F1',       // Blue icon
-    border: '#C7D2FE',     // Light blue border
-  }
+    background: '#EFF6FF', // Light blue background
+    icon: '#3B82F6',       // Blue icon (updated)
+    border: '#BFDBFE',     // Light blue border
+  },
+};
+
+// Chart Data Series Colors (Multi-Series Bar Chart)
+export const chartColors = {
+  aura_score: '#8B7ED8',        // Purple
+  cigarettes_avoided: '#22C55E', // Bright Green  
+  cigarettes_consumed: '#DC2626', // Bright Red
+  money_saved: '#F59E0B',        // Bright Orange
 };
 ```
 

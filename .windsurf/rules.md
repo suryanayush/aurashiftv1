@@ -324,16 +324,19 @@ const activityIcons = {
 - **Rule**: Cards must use consistent border radius (16px for secondary, 24px for primary)
 - **Rule**: Maintain consistent padding and margins across similar components
 
-### 4.6 Screen-Specific UI Rules (Based on Mockups)
+### 4.6 Screen-Specific UI Rules (Based on Implementation)
 
 #### 4.6.1 Home Screen Rules
 - **Rule**: Display personalized greeting with user avatar and name: "Hi, [Name]!"
-- **Rule**: Timer must be the hero element with large, readable format (Days, Hours, Minutes)
+- **Rule**: User profile icon in top-right corner using TouchableOpacity with User icon from Lucide React Native
+- **Rule**: Timer must be the hero element with large, readable format (Days:Hours:Minutes:Seconds)
+- **Rule**: "I Smoked" button positioned directly below timer with reset icon (RotateCcw) and red background
 - **Rule**: Show encouraging message below timer: "You're doing a really great job! Keep doing it."
-- **Rule**: Progress cards must show icons, numbers, and descriptive labels
-- **Rule**: Use 3D isometric illustrations for visual appeal (like the 3D shapes in mockup)
+- **Rule**: Progress cards must show icons, numbers, and descriptive labels with INR currency (₹)
+- **Rule**: Multi-series bar chart with 4 data series: Aura Score (purple), Cigarettes Avoided (green), Cigarettes Consumed (red), Money Saved (orange)
+- **Rule**: Chart timeframes: 4 Days, 30 Days, 90 Days with interactive filter toggles
 - **Rule**: "Other Progresses" section with grid layout for key metrics
-- **Rule**: Daily log section at bottom with quick activity logging
+- **Rule**: Daily Activities section with light red header background and horizontal card layout
 
 #### 4.6.2 Statistics Screen Rules
 - **Rule**: Use date range selector at top: "This week [date range]"
@@ -432,26 +435,44 @@ const prepareAIContext = (user: UserProfile, recentActivities: Activity[]) => {
 ### 6.1 Progress Tracking Rules
 - **Rule**: Track all user interactions for analytics (anonymized)
 - **Rule**: Generate daily, weekly, and monthly progress reports
-- **Rule**: Calculate financial savings based on cigarettes avoided
+- **Rule**: Calculate financial savings based on cigarettes avoided using INR currency (₹)
 - **Rule**: Track health milestones based on scientific research
+- **Rule**: All financial displays must use Indian Rupee symbol (₹) instead of USD ($)
 - **Guideline**: Provide predictive insights based on user patterns
 
 ### 6.2 Graph and Visualization Rules
 ```typescript
-// ✅ REQUIRED: Chart data structure
-interface ChartData {
+// ✅ REQUIRED: Multi-series chart data structure
+interface MultiSeriesData {
   labels: string[];
-  datasets: {
-    data: number[];
-    color: string;
-    strokeWidth: number;
-  }[];
-  metadata: {
-    period: 'daily' | 'weekly' | 'monthly';
-    metric: 'aura_score' | 'activities' | 'streak_length';
+  series: {
+    aura_score: number[];
+    cigarettes_avoided: number[];
+    cigarettes_consumed: number[];
+    money_saved: number[];
   };
 }
+
+// ✅ REQUIRED: Chart color scheme
+export const TREND_COLORS = {
+  aura_score: () => '#8b7ed8', // Purple
+  cigarettes_avoided: () => '#22c55e', // Bright Green
+  cigarettes_consumed: () => '#dc2626', // Bright Red
+  money_saved: () => '#f59e0b', // Bright Orange
+} as const;
+
+// ✅ REQUIRED: Chart timeframes
+export type TimeRange = '4d' | '30d' | '90d';
+export type FilterType = 'aura_score' | 'cigarettes_avoided' | 'cigarettes_consumed' | 'money_saved';
 ```
+
+#### 6.2.1 Multi-Series Bar Chart Rules
+- **Rule**: Display maximum 4 data series simultaneously
+- **Rule**: Individual series scaling for optimal visibility of all data types
+- **Rule**: Interactive filter toggles with minimum 1 filter active
+- **Rule**: Value labels above bars for small values (< 20px height)
+- **Rule**: Consistent bar spacing using gap property instead of margins
+- **Rule**: React Native compatible shadows using style prop, not CSS classes
 
 ## 7. Security & Privacy Rules
 
