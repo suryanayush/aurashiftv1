@@ -1,6 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl, Alert, Dimensions } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
+import { 
+  Home, 
+  BarChart3, 
+  Calendar, 
+  MessageCircle, 
+  User, 
+  Cigarette, 
+  DollarSign, 
+  Heart, 
+  Trophy,
+  Dumbbell,
+  Apple,
+  Sparkles,
+  Users,
+  Plus
+} from 'lucide-react-native';
 import { generateDashboardData } from '../../utils/dashboardData';
+import { getProgressChartData, chartConfig } from '../../utils/chartData';
 import { DashboardData } from '../../types';
 
 const { width } = Dimensions.get('window');
@@ -9,6 +27,25 @@ const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Real-time timer calculation
+  const calculateRealTimeTimer = (startTime: Date) => {
+    const now = new Date();
+    const diffInMilliseconds = now.getTime() - startTime.getTime();
+    
+    if (diffInMilliseconds < 0) {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+
+    const totalSeconds = Math.floor(diffInMilliseconds / 1000);
+    const days = Math.floor(totalSeconds / (24 * 60 * 60));
+    const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
+    const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+    const seconds = totalSeconds % 60;
+
+    return { days, hours, minutes, seconds };
+  };
 
 
   const loadDashboardData = async () => {
