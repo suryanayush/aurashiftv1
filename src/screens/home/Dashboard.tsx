@@ -21,6 +21,8 @@ import {
 import { generateDashboardData } from '../../utils/dashboardData';
 import { storage } from '../../utils/storage';
 import { dashboardAPI, DashboardUser } from '../../api/dashboard';
+import { activitiesAPI, ActivityType } from '../../api/activities';
+import { ActivityModal } from '../../components/ui';
 import { 
   getProgressChartData, 
   TREND_COLORS, 
@@ -30,7 +32,7 @@ import {
   TimeRange,
   FilterType,
   MultiSeriesData
-} from '../../utils/chartData';
+} from '../../api/chart';
 import { DashboardData } from '../../types';
 
 const { width } = Dimensions.get('window');
@@ -154,8 +156,14 @@ const MultiSeriesBarChart = React.memo(({ data, activeFilters }: { data: MultiSe
 const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [userData, setUserData] = useState<DashboardUser | null>(null);
+  const [chartData, setChartData] = useState<MultiSeriesData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
+  
+  // Activity modal state
+  const [activityModalVisible, setActivityModalVisible] = useState(false);
+  const [isCreatingActivity, setIsCreatingActivity] = useState(false);
+  const [isRefreshingData, setIsRefreshingData] = useState(false);
   
   // Simplified chart state management
   const [timeRange, setTimeRange] = useState<TimeRange>('4d');
@@ -179,21 +187,44 @@ const Dashboard: React.FC = () => {
     return { days, hours, minutes, seconds };
   };
 
+  const loadChartData = async (selectedTimeRange: TimeRange) => {
+    try {
+      const realChartData = await getProgressChartData(selectedTimeRange);
+      setChartData(realChartData);
+    } catch (error) {
+      console.error('Error loading chart data:', error);
+      // Fallback to empty chart data
+      setChartData({
+        labels: [],
+        series: {
+          aura_score: [],
+          cigarettes_avoided: [],
+          cigarettes_consumed: [],
+          money_saved: [],
+        },
+      });
+    }
+  };
+
   const loadDashboardData = async () => {
     try {
       // Initialize sample data if needed
       await storage.initializeSampleData();
       
-      // Load dashboard data from storage (for charts and activities)
+      // Load dashboard data from storage (for activities - temporary until full migration)
       const data = await generateDashboardData();
       setDashboardData(data);
 
+      // Fetch user data from backend API
       const userResponse = await dashboardAPI.getStats();
       if (userResponse.success && userResponse.data) {
         setUserData(userResponse.data);
       } else {
         console.error('Failed to fetch user data:', userResponse.error);
       }
+
+      // Load real chart data
+      await loadChartData(timeRange);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       Alert.alert('Error', 'Failed to load dashboard data');
@@ -202,9 +233,208 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  // Activity functions with optimistic updates
+  const handleActivityCreate = async (type: ActivityType, metadata?: any) => {
+    if (__DEV__) {
+      console.log(`[ACTIVITY CREATE] Starting: ${type}`, metadata);
+    }
+    
+    setIsCreatingActivity(true);
+    
+    // Get the points for this activity type for optimistic update
+    const activityPoints = {
+      cigarette_consumed: -10,
+      gym_workout: 5,
+      healthy_meal: 3,
+      skin_care: 2,
+      social_event: 1,
+    }[type];
+
+    try {
+      // 1. INSTANT: Close modal immediately for responsive UI
+      setActivityModalVisible(false);
+      
+      // 2. INSTANT: Optimistically update chart data immediately
+      updateChartDataOptimistically(type, activityPoints);
+      
+      // 3. INSTANT: Optimistically update user aura score and stats
+      if (userData) {
+        const optimisticUserData = { ...userData };
+        optimisticUserData.auraScore = Math.max(0, userData.auraScore + activityPoints);
+        
+        // Calculate optimistic cigarettes avoided and money saved
+        if (type === 'cigarette_consumed' && userData.smokingHistory) {
+          const { cigarettesPerDay, costPerCigarette } = userData.smokingHistory;
+          
+          // Optimistically decrease avoided count and update money saved
+          const newCigarettesAvoided = Math.max(0, userData.cigarettesAvoided - 1);
+          const newMoneySaved = Math.max(0, userData.totalMoneySaved - costPerCigarette);
+          
+          optimisticUserData.cigarettesAvoided = newCigarettesAvoided;
+          optimisticUserData.totalMoneySaved = Math.round(newMoneySaved * 100) / 100;
+        }
+        
+        optimisticUserData.stats = { 
+          ...userData.stats, 
+          level: Math.floor(optimisticUserData.auraScore / 100) + 1,
+          cigarettesAvoided: optimisticUserData.cigarettesAvoided,
+          moneySaved: optimisticUserData.totalMoneySaved
+        };
+        
+        setUserData(optimisticUserData);
+        
+        // Debug log for verification
+        if (__DEV__) {
+          console.log(`[OPTIMISTIC] User score: ${userData.auraScore} + ${activityPoints} = ${optimisticUserData.auraScore}`);
+          if (type === 'cigarette_consumed') {
+            console.log(`[OPTIMISTIC] Cigarettes avoided: ${userData.cigarettesAvoided} -> ${optimisticUserData.cigarettesAvoided}`);
+            console.log(`[OPTIMISTIC] Money saved: ${userData.totalMoneySaved} -> ${optimisticUserData.totalMoneySaved}`);
+          }
+        }
+      }
+      
+      // 4. BACKGROUND: Make API call
+      if (__DEV__) {
+        console.log(`[ACTIVITY CREATE] Making API call for: ${type}`);
+      }
+      const response = await activitiesAPI.create({ type, metadata });
+      if (__DEV__) {
+        console.log(`[ACTIVITY CREATE] API Response:`, response);
+      }
+      
+      if (response.success && response.data) {
+        // Show success message
+        Alert.alert(
+          'Activity Logged!',
+          `${type.replace('_', ' ').toUpperCase()} has been logged. Your new aura score: ${response.data.newAuraScore}`,
+          [{ text: 'OK' }]
+        );
+        
+        // 5. BACKGROUND: Sync with real backend data (no loading state)
+        Promise.all([
+          refreshUserData(),
+          refreshChartData()
+        ]).catch(error => {
+          console.error('Background sync error:', error);
+        });
+      } else {
+        // Revert optimistic updates on error
+        await Promise.all([
+          refreshUserData(),
+          refreshChartData()
+        ]);
+        Alert.alert('Error', response.error || 'Failed to log activity');
+      }
+    } catch (error) {
+      console.error('Activity creation error:', error);
+      // Revert optimistic updates on error
+      await Promise.all([
+        refreshUserData(),
+        refreshChartData()
+      ]);
+      Alert.alert('Error', 'Failed to log activity. Please try again.');
+    } finally {
+      setIsCreatingActivity(false);
+    }
+  };
+
+  // Optimistic chart update function for ALL activities
+  const updateChartDataOptimistically = (activityType: ActivityType, points: number) => {
+    if (!chartData) return;
+
+    // Clone current chart data
+    const updatedChartData = { ...chartData };
+    updatedChartData.series = { ...chartData.series };
+    
+    // Update the last period (most recent) with the new activity
+    const lastIndex = chartData.labels.length - 1;
+    if (lastIndex >= 0) {
+      // ALWAYS update aura score for ALL activity types
+      const currentScore = chartData.series.aura_score[lastIndex] || 0;
+      
+      // If all scores are 0 and this is a positive activity, start from a base of 10 for visibility
+      const baseScore = (currentScore === 0 && points > 0 && chartData.series.aura_score.every(s => s === 0)) ? 10 : currentScore;
+      const newScore = Math.max(0, baseScore + points);
+      
+      updatedChartData.series.aura_score = [...chartData.series.aura_score];
+      updatedChartData.series.aura_score[lastIndex] = newScore;
+
+      // Update cigarettes consumed specifically for cigarette activities
+      if (activityType === 'cigarette_consumed') {
+        updatedChartData.series.cigarettes_consumed = [...chartData.series.cigarettes_consumed];
+        updatedChartData.series.cigarettes_consumed[lastIndex] += 1;
+        
+        // Also update cigarettes avoided and money saved optimistically
+        if (userData?.smokingHistory) {
+          const { cigarettesPerDay, costPerCigarette } = userData.smokingHistory;
+          
+          // Decrease cigarettes avoided for this period
+          updatedChartData.series.cigarettes_avoided = [...chartData.series.cigarettes_avoided];
+          const currentAvoided = chartData.series.cigarettes_avoided[lastIndex] || 0;
+          updatedChartData.series.cigarettes_avoided[lastIndex] = Math.max(0, currentAvoided - 1);
+          
+          // Update money saved based on new avoided count
+          updatedChartData.series.money_saved = [...chartData.series.money_saved];
+          const newAvoidedCount = updatedChartData.series.cigarettes_avoided[lastIndex];
+          updatedChartData.series.money_saved[lastIndex] = Math.round(newAvoidedCount * costPerCigarette * 100) / 100;
+        }
+      } else {
+        // Copy other series as-is for non-cigarette activities
+        updatedChartData.series.cigarettes_avoided = [...chartData.series.cigarettes_avoided];
+        updatedChartData.series.money_saved = [...chartData.series.money_saved];
+      }
+    }
+
+    // Immediately update the chart data state
+    setChartData(updatedChartData);
+    
+    // Debug log to verify updates
+    if (__DEV__) {
+      console.log(`[OPTIMISTIC] ${activityType} (${points} pts) -> Score: ${updatedChartData.series.aura_score[lastIndex]}`);
+    }
+  };
+
+  // Separate refresh functions for targeted updates
+  const refreshUserData = async () => {
+    try {
+      const userResponse = await dashboardAPI.getStats();
+      if (userResponse.success && userResponse.data) {
+        setUserData(userResponse.data);
+      }
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    }
+  };
+
+  const refreshChartData = async () => {
+    try {
+      const realChartData = await getProgressChartData(timeRange);
+      setChartData(realChartData);
+    } catch (error) {
+      console.error('Error refreshing chart data:', error);
+    }
+  };
+
+  const handleISmokedPress = () => {
+    Alert.alert(
+      'Confirm Smoking',
+      'Are you sure you want to log smoking a cigarette? This will reduce your aura score by 10 points.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Yes, I Smoked', 
+          style: 'destructive',
+          onPress: () => handleActivityCreate('cigarette_consumed', { note: 'Logged via I Smoked button' })
+        }
+      ]
+    );
+  };
+
   // Simple chart helper functions
   const handleTimeRangeChange = (newTimeRange: TimeRange) => {
     setTimeRange(newTimeRange);
+    // Use the loadChartData function directly for time range changes
+    loadChartData(newTimeRange);
   };
 
   const toggleFilter = (filter: FilterType) => {
@@ -216,9 +446,6 @@ const Dashboard: React.FC = () => {
       setActiveFilters([...activeFilters, filter]);
     }
   };
-
-  // Get chart data
-  const chartData: MultiSeriesData = getProgressChartData(timeRange);
 
   useEffect(() => {
     loadDashboardData();
@@ -260,6 +487,7 @@ const Dashboard: React.FC = () => {
               </Text>
               <Text className="text-red-100 text-base mt-1">
                 Level {userData ? userData.stats.level : dashboardData.user.level} • {userData ? userData.auraScore : dashboardData.user.auraScore} Points
+                {isCreatingActivity && <Text className="text-red-200"> • Updating...</Text>}
               </Text>
             </View>
             <TouchableOpacity className="w-12 h-12 bg-white/20 rounded-2xl items-center justify-center">
@@ -307,29 +535,44 @@ const Dashboard: React.FC = () => {
               {dashboardData.motivationalMessage}
             </Text>
             
-            {/* I Smoked Button */}
-            <TouchableOpacity
-              className="bg-red-500 rounded-2xl p-3 mt-6 flex-row items-center justify-center"
-              style={{
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3
-              }}
-              onPress={() => Alert.alert(
-                'Reset Timer?',
-                'This will reset your smoke-free timer and deduct 10 points from your Aura score.',
-                [
-                  { text: 'Cancel', style: 'cancel' },
-                  { text: 'Reset', style: 'destructive', onPress: () => Alert.alert('Feature', 'Timer reset functionality will be implemented') }
-                ]
-              )}
-              activeOpacity={0.8}
-            >
-              <RotateCcw size={20} color="#ffffff" />
-              <Text className="text-white font-bold text-base ml-2">I Smoked</Text>
-            </TouchableOpacity>
+            {/* Activity Buttons */}
+            <View className="flex-row space-x-3 mt-6">
+              {/* I Smoked Button */}
+              <TouchableOpacity
+                className="flex-1 bg-red-500 rounded-2xl p-3 flex-row items-center justify-center"
+                style={{
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 3
+                }}
+                onPress={handleISmokedPress}
+                disabled={isCreatingActivity}
+                activeOpacity={0.8}
+              >
+                <Cigarette size={20} color="#ffffff" />
+                <Text className="text-white font-bold ml-2">I Smoked</Text>
+              </TouchableOpacity>
+
+              {/* Log Activity Button */}
+              <TouchableOpacity
+                className="flex-1 bg-green-500 rounded-2xl p-3 flex-row items-center justify-center"
+                style={{
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 3
+                }}
+                onPress={() => setActivityModalVisible(true)}
+                disabled={isCreatingActivity}
+                activeOpacity={0.8}
+              >
+                <Plus size={20} color="#ffffff" />
+                <Text className="text-white font-bold ml-2">Log Activity</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -411,7 +654,7 @@ const Dashboard: React.FC = () => {
               }}
             >
               <MultiSeriesBarChart 
-                data={chartData}
+                data={chartData || { labels: [], series: { aura_score: [], cigarettes_avoided: [], cigarettes_consumed: [], money_saved: [] } }}
                 activeFilters={activeFilters}
               />
             </View>
@@ -434,7 +677,10 @@ const Dashboard: React.FC = () => {
                 <Text className="text-white text-xl font-bold">Daily Activities</Text>
                 <Text className="text-white text-sm">Track your wellness journey</Text>
               </View>
-              <TouchableOpacity className="bg-red-500 w-12 h-12 rounded-xl items-center justify-center">
+              <TouchableOpacity 
+                className="bg-red-500 w-12 h-12 rounded-xl items-center justify-center"
+                onPress={() => setActivityModalVisible(true)}
+              >
                 <Plus size={24} color="#ffffff" />
               </TouchableOpacity>
             </View>
@@ -490,7 +736,22 @@ const Dashboard: React.FC = () => {
                     shadowRadius: 2,
                     elevation: 1
                   }}
-                  onPress={() => Alert.alert('Activity', `Log ${action.title} (+${action.points} points)`)}
+                  onPress={() => {
+                    // Map action IDs to activity types
+                    const activityTypeMap: Record<string, ActivityType> = {
+                      'gym': 'gym_workout',
+                      'healthy_meal': 'healthy_meal', 
+                      'skincare': 'skin_care',
+                      'event_social': 'social_event'
+                    };
+                    
+                    const activityType = activityTypeMap[action.id];
+                    if (activityType) {
+                      handleActivityCreate(activityType, { note: `Quick logged: ${action.title}` });
+                    } else {
+                      Alert.alert('Activity', `Log ${action.title} (+${action.points} points)`);
+                    }
+                  }}
                   activeOpacity={0.8}
                 >
                   <View 
@@ -562,6 +823,14 @@ const Dashboard: React.FC = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Activity Modal */}
+      <ActivityModal
+        visible={activityModalVisible}
+        onClose={() => setActivityModalVisible(false)}
+        onActivityCreate={handleActivityCreate}
+        isLoading={isCreatingActivity}
+      />
     </View>
   );
 };

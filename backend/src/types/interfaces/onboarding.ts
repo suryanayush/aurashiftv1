@@ -1,7 +1,7 @@
 export interface OnboardingRequest {
   yearsSmoked: number;
   cigarettesPerDay: number;
-  costPerPack: number;
+  costPerCigarette: number;
   motivations: string[];
 }
 
@@ -20,6 +20,6 @@ export interface OnboardingResponse {
 export interface SmokingProfile {
   yearsSmoked: number;
   cigarettesPerDay: number;
-  costPerPack: number;
+  costPerCigarette: number;
   motivations: string[];
 }

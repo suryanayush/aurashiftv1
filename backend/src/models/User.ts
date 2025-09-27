@@ -29,7 +29,7 @@ const smokingProfileSchema = new Schema({
     required: true,
     min: 0,
   },
-  costPerPack: {
+  costPerCigarette: {
     type: Number,
     required: true,
     min: 0,

@@ -86,7 +86,7 @@ export const onboardingAPI = {
   completeOnboarding: async (onboardingData: {
     yearsSmoked: number;
     cigarettesPerDay: number;
-    costPerPack: number;
+    costPerCigarette: number;
     motivations: string[];
   }): Promise<any> => {
     try {
@@ -102,7 +102,7 @@ export const onboardingAPI = {
   updateOnboarding: async (onboardingData: {
     yearsSmoked: number;
     cigarettesPerDay: number;
-    costPerPack: number;
+    costPerCigarette: number;
     motivations: string[];
   }): Promise<any> => {
     try {

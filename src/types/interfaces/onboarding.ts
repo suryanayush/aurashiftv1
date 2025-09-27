@@ -7,7 +7,7 @@ export interface OnboardingFlowProps {
 export interface OnboardingData {
   yearsSmoked: string;
   cigarettesPerDay: string;
-  costPerPack: string;
+  costPerCigarette: string;
   motivations: string[];
 }
 

@@ -25,7 +25,7 @@ export const completeOnboarding = async (
       return;
     }
 
-    const { yearsSmoked, cigarettesPerDay, costPerPack, motivations }: OnboardingRequest = req.body;
+    const { yearsSmoked, cigarettesPerDay, costPerCigarette, motivations }: OnboardingRequest = req.body;
 
     // Find user
     const user = await User.findById(userId);
@@ -50,7 +50,7 @@ export const completeOnboarding = async (
     user.smokingHistory = {
       yearsSmoked,
       cigarettesPerDay,
-      costPerPack,
+      costPerCigarette,
       motivations,
     };
     user.onboardingCompleted = true;
@@ -94,7 +94,7 @@ export const updateOnboarding = async (
       return;
     }
 
-    const { yearsSmoked, cigarettesPerDay, costPerPack, motivations }: OnboardingRequest = req.body;
+    const { yearsSmoked, cigarettesPerDay, costPerCigarette, motivations }: OnboardingRequest = req.body;
 
     // Find user
     const user = await User.findById(userId);
@@ -110,7 +110,7 @@ export const updateOnboarding = async (
     user.smokingHistory = {
       yearsSmoked,
       cigarettesPerDay,
-      costPerPack,
+      costPerCigarette,
       motivations,
     };
 

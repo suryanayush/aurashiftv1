@@ -19,7 +19,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     yearsSmoked: '',
     cigarettesPerDay: '',
-    costPerPack: '10',
+    costPerCigarette: '5',
     motivations: [],
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -85,7 +85,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
       const response = await onboardingAPI.completeOnboarding({
         yearsSmoked: Number(onboardingData.yearsSmoked),
         cigarettesPerDay: Number(onboardingData.cigarettesPerDay),
-        costPerPack: Number(onboardingData.costPerPack),
+        costPerCigarette: Number(onboardingData.costPerCigarette),
         motivations: onboardingData.motivations,
       });
 
@@ -160,13 +160,13 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             </View>
 
             <View className="mb-6">
-              <Text className="text-black font-medium mb-2">Cost per pack (optional)</Text>
+              <Text className="text-black font-medium mb-2">Cost per cigarette (optional)</Text>
               <TextInput
                 className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base text-center"
-                placeholder="Enter cost per pack"
+                placeholder="Enter cost per cigarette (e.g., 5)"
                 placeholderTextColor="#9CA3AF"
-                value={onboardingData.costPerPack}
-                onChangeText={(value) => handleInputChange('costPerPack', value)}
+                value={onboardingData.costPerCigarette}
+                onChangeText={(value) => handleInputChange('costPerCigarette', value)}
                 keyboardType="numeric"
               />
             </View>

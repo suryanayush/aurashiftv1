@@ -19,7 +19,7 @@ export interface DashboardUser {
   smokingHistory?: {
     yearsSmoked: number;
     cigarettesPerDay: number;
-    costPerPack: number;
+    costPerCigarette: number;
     motivations: string[];
   };
   streakStartTime?: string;

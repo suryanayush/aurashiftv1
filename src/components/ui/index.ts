@@ -2,3 +2,4 @@
 
 export { default as SplashScreen } from './SplashScreen';
 export { Container } from './Container';
+export { default as ActivityModal } from './ActivityModal';

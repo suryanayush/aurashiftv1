@@ -2,6 +2,8 @@ import { Router } from 'express';
 import authRoutes from './auth';
 import onboardingRoutes from './onboarding';
 import dashboardRoutes from './dashboard';
+import activitiesRoutes from './activities';
+import chartRoutes from './chart';
 
 const router = Router();
 
@@ -18,5 +20,7 @@ router.get('/health', (req, res) => {
 router.use('/auth', authRoutes);
 router.use('/onboarding', onboardingRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/activities', activitiesRoutes);
+router.use('/chart', chartRoutes);
 
 export default router;
