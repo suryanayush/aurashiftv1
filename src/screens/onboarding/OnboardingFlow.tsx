@@ -50,6 +50,10 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
           Alert.alert('Error', 'Please enter a valid number of cigarettes per day');
           return false;
         }
+        if (!onboardingData.costPerCigarette || isNaN(Number(onboardingData.costPerCigarette)) || Number(onboardingData.costPerCigarette) < 0) {
+          Alert.alert('Error', 'Please enter a valid cost per cigarette');
+          return false;
+        }
         return true;
       case 3:
         if (onboardingData.motivations.length === 0) {
@@ -160,7 +164,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             </View>
 
             <View className="mb-6">
-              <Text className="text-black font-medium mb-2">Cost per cigarette (optional)</Text>
+              <Text className="text-black font-medium mb-2">Cost per cigarette</Text>
               <TextInput
                 className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base text-center"
                 placeholder="Enter cost per cigarette (e.g., 5)"

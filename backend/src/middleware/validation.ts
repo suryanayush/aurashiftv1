@@ -73,10 +73,10 @@ export const validateOnboarding = [
     .isFloat({ min: 0 })
     .withMessage('Cigarettes per day must be a positive number'),
   
-  body('costPerPack')
+  body('costPerCigarette')
     .isNumeric()
     .isFloat({ min: 0 })
-    .withMessage('Cost per pack must be a positive number'),
+    .withMessage('Cost per cigarette must be a positive number'),
   
   body('motivations')
     .isArray({ min: 1 })
