@@ -124,17 +124,17 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
       case 1:
         return (
           <View className="flex-1">
-            <Text className="text-2xl font-bold text-gray-800 text-center mb-4">
+            <Text className="text-2xl font-bold text-black text-center mb-4">
               Smoking History
             </Text>
-            <Text className="text-gray-600 text-center mb-8">
+            <Text className="text-black text-center mb-8">
               Help us understand your smoking background
             </Text>
             
             <View className="mb-6">
-              <Text className="text-gray-700 font-medium mb-2">How many years have you been smoking?</Text>
+              <Text className="text-black font-medium mb-2">How many years have you been smoking?</Text>
               <TextInput
-                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-800 text-base text-center"
+                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base text-center"
                 placeholder="Enter number of years"
                 placeholderTextColor="#9CA3AF"
                 value={onboardingData.yearsSmoked}
@@ -148,17 +148,17 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
       case 2:
         return (
           <View className="flex-1">
-            <Text className="text-2xl font-bold text-gray-800 text-center mb-4">
+            <Text className="text-2xl font-bold text-black text-center mb-4">
               Daily Consumption
             </Text>
-            <Text className="text-gray-600 text-center mb-8">
+            <Text className="text-black text-center mb-8">
               This helps us calculate your progress and savings
             </Text>
             
             <View className="mb-6">
-              <Text className="text-gray-700 font-medium mb-2">How many cigarettes do you smoke per day?</Text>
+              <Text className="text-black font-medium mb-2">How many cigarettes do you smoke per day?</Text>
               <TextInput
-                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-800 text-base text-center"
+                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base text-center"
                 placeholder="Enter number of cigarettes"
                 placeholderTextColor="#9CA3AF"
                 value={onboardingData.cigarettesPerDay}
@@ -168,9 +168,9 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             </View>
 
             <View className="mb-6">
-              <Text className="text-gray-700 font-medium mb-2">Cost per pack (optional)</Text>
+              <Text className="text-black font-medium mb-2">Cost per pack (optional)</Text>
               <TextInput
-                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-800 text-base text-center"
+                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base text-center"
                 placeholder="Enter cost per pack"
                 placeholderTextColor="#9CA3AF"
                 value={onboardingData.costPerPack}
@@ -184,10 +184,10 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
       case 3:
         return (
           <View className="flex-1">
-            <Text className="text-2xl font-bold text-gray-800 text-center mb-4">
+            <Text className="text-2xl font-bold text-black text-center mb-4">
               Your Motivations
             </Text>
-            <Text className="text-gray-600 text-center mb-8">
+            <Text className="text-black text-center mb-8">
               What drives you to quit smoking? (Select all that apply)
             </Text>
             
@@ -197,15 +197,15 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
                   key={motivation}
                   className={`p-4 rounded-xl mb-3 border-2 ${
                     onboardingData.motivations.includes(motivation)
-                      ? 'bg-blue-50 border-blue-500'
+                      ? 'bg-red-50 border-red-400'
                       : 'bg-gray-50 border-gray-200'
                   }`}
                   onPress={() => toggleMotivation(motivation)}
                 >
                   <Text className={`text-center font-medium ${
                     onboardingData.motivations.includes(motivation)
-                      ? 'text-blue-700'
-                      : 'text-gray-700'
+                      ? 'text-red-700'
+                      : 'text-black'
                   }`}>
                     {motivation}
                   </Text>
@@ -223,7 +223,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-gradient-to-br from-green-400 to-blue-500"
+      className="flex-1 bg-gradient-to-br from-red-200 to-red-400"
     >
       <View className="flex-1 px-8 py-12">
         {/* Progress Indicator */}
@@ -260,7 +260,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
 
             <TouchableOpacity
               className={`flex-1 py-4 rounded-xl ml-2 ${
-                isLoading ? 'bg-gray-400' : 'bg-gradient-to-r from-green-500 to-blue-600'
+                isLoading ? 'bg-gray-400' : 'bg-gradient-to-r from-red-400 to-red-500'
               }`}
               onPress={handleNext}
               disabled={isLoading}
