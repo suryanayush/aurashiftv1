@@ -33,10 +33,21 @@ export default function App() {
         return;
       }
 
-      // Check if onboarding is completed
-      const onboardingCompleted = await storage.isOnboardingCompleted();
+      // Verify token with backend and get current user state
+      const { authAPI } = await import('src/api/auth');
+      const verifyResponse = await authAPI.verifyToken();
       
-      if (!onboardingCompleted) {
+      if (!verifyResponse.success || !verifyResponse.user) {
+        // Token is invalid, remove it and go to auth
+        await storage.removeItem('aurashift_auth_token');
+        await storage.removeItem('aurashift_onboarding_completed');
+        setAppState('auth');
+        setIsLoading(false);
+        return;
+      }
+
+      // Check onboarding status from backend (this is now synced to local storage by verifyToken)
+      if (!verifyResponse.user.onboardingCompleted) {
         // Auth exists but onboarding not completed
         setAppState('onboarding');
         setIsLoading(false);
@@ -48,7 +59,9 @@ export default function App() {
       setIsLoading(false);
     } catch (error) {
       console.error('Error checking app state:', error);
-      // Default to auth on error
+      // Default to auth on error and clear potentially invalid data
+      await storage.removeItem('aurashift_auth_token');
+      await storage.removeItem('aurashift_onboarding_completed');
       setAppState('auth');
       setIsLoading(false);
     }
@@ -66,7 +79,7 @@ export default function App() {
   }, [animationCompleted, isLoading]);
 
   const handleLoginSuccess = () => {
-    checkAppState(); // Re-check state after login
+    checkAppState(); // Re-check state after login (now verifies with backend)
   };
 
   const handleRegisterSuccess = () => {

@@ -25,5 +25,6 @@ export interface AuthResponse {
     id: string;
     email: string;
     displayName: string;
+    onboardingCompleted: boolean;
   };
 }

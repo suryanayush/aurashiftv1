@@ -151,3 +151,43 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
     });
   }
 };
+
+// Verify token and get user data
+export const verifyToken = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).user?.userId;
+    
+    if (!userId) {
+      res.status(401).json({
+        success: false,
+        error: 'Unauthorized'
+      });
+      return;
+    }
+
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        displayName: user.displayName,
+        onboardingCompleted: user.onboardingCompleted,
+      }
+    } as AuthResponse);
+  } catch (error: any) {
+    console.error('Token verification error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Token verification failed'
+    });
+  }
+};

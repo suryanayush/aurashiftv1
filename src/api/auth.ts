@@ -111,9 +111,10 @@ export const authAPI = {
           confirmPassword: userData.confirmPassword,
         }),
       });
-      if (response.success && response.token) {
+      if (response.success && response.token && response.user) {
         const { storage } = await import('../utils/storage');
         await storage.setAuthToken(response.token);
+        await storage.setOnboardingCompleted(response.user.onboardingCompleted);
       }
 
       return response;
@@ -134,9 +135,11 @@ export const authAPI = {
           password: credentials.password,
         }),
       });
-      if (response.success && response.token) {
+      if (response.success && response.token && response.user) {
         const { storage } = await import('../utils/storage');
         await storage.setAuthToken(response.token);
+        // Save onboarding status from backend
+        await storage.setOnboardingCompleted(response.user.onboardingCompleted);
       }
 
       return response;
@@ -156,6 +159,27 @@ export const authAPI = {
       return {
         success: false,
         error: error.message || 'Failed to fetch profile',
+      };
+    }
+  },
+
+  verifyToken: async (): Promise<AuthResponse> => {
+    try {
+      const response = await apiRequest('/auth/verify', {
+        method: 'GET',
+      }, true);
+      
+      if (response.success && response.user) {
+        const { storage } = await import('../utils/storage');
+        // Sync onboarding status from backend
+        await storage.setOnboardingCompleted(response.user.onboardingCompleted);
+      }
+      
+      return response;
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Token verification failed',
       };
     }
   },
