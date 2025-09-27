@@ -98,4 +98,41 @@ export const storage = {
     const score = await this.getItem<number>(STORAGE_KEYS.AURA_SCORE);
     return score || 0;
   },
+
+  // Initialize sample data for development
+  async initializeSampleData(): Promise<void> {
+    try {
+      const existingUserData = await this.getUserData();
+      if (existingUserData) {
+        return;
+      }
+
+      // Sample user data
+      const sampleUserData: StoredUserData = {
+        displayName: 'John Doe',
+        email: 'john.doe@example.com',
+        smokingHistory: {
+          yearsSmoked: 5,
+          cigarettesPerDay: 10,
+          costPerPack: 15, // INR
+          motivations: ['health', 'money', 'family'],
+        },
+        createdAt: new Date().toISOString(),
+      };
+
+      const timerStart = new Date();
+      timerStart.setDate(timerStart.getDate() - 3);
+      timerStart.setHours(timerStart.getHours() - 5);
+
+      // Save sample data
+      await this.saveUserData(sampleUserData);
+      await this.setTimerStart(timerStart);
+      await this.setAuraScore(45); // Sample aura score
+      await this.setOnboardingCompleted(true);
+
+      console.log('Sample data initialized successfully');
+    } catch (error) {
+      console.error('Error initializing sample data:', error);
+    }
+  },
 };

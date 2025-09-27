@@ -19,6 +19,7 @@ import {
   RotateCcw
 } from 'lucide-react-native';
 import { generateDashboardData } from '../../utils/dashboardData';
+import { storage } from '../../utils/storage';
 import { 
   getProgressChartData, 
   TREND_COLORS, 
@@ -178,6 +179,10 @@ const Dashboard: React.FC = () => {
 
   const loadDashboardData = async () => {
     try {
+      // Initialize sample data if needed
+      await storage.initializeSampleData();
+      
+      // Load dashboard data from storage
       const data = await generateDashboardData();
       setDashboardData(data);
     } catch (error) {

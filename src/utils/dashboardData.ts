@@ -35,7 +35,7 @@ const calculateLevel = (auraScore: number): number => {
 // Get motivational message based on progress
 const getMotivationalMessage = (days: number, auraScore: number): string => {
   if (days === 0) {
-    return "Your journey starts now! Every moment smoke-free is a victory.";
+    return "Every moment smoke-free is a victory.";
   } else if (days === 1) {
     return "Amazing! You've completed your first day. You're building something incredible!";
   } else if (days < 7) {

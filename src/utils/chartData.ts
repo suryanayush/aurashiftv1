@@ -72,6 +72,13 @@ export const getProgressChartData = (timeRange: TimeRange = '4d'): MultiSeriesDa
   return CHART_DATA[timeRange] || CHART_DATA['4d'];
 };
 
+// Future: Get real chart data from user activities
+export const getRealProgressChartData = async (timeRange: TimeRange = '4d'): Promise<MultiSeriesData> => {
+  // TODO: Implement real data fetching from user activities
+  // For now, return static data
+  return getProgressChartData(timeRange);
+};
+
 // Time range options
 export const TIME_RANGE_OPTIONS = [
   { value: '4d' as TimeRange, label: '4 Days' },
