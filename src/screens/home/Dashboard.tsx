@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, RefreshControl, Alert, Dimensions } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Alert, Dimensions } from 'react-native';
+// import { LineChart } from 'react-native-chart-kit'; // Temporarily disabled to isolate errors
 import { 
   Home, 
   BarChart3, 
@@ -18,16 +18,158 @@ import {
   Plus
 } from 'lucide-react-native';
 import { generateDashboardData } from '../../utils/dashboardData';
-import { getProgressChartData, chartConfig } from '../../utils/chartData';
+import { 
+  getProgressChartData, 
+  TREND_COLORS, 
+  FILTER_LABELS,
+  TIME_RANGE_OPTIONS,
+  DEFAULT_ACTIVE_FILTERS,
+  TimeRange,
+  FilterType,
+  MultiSeriesData
+} from '../../utils/chartData';
 import { DashboardData } from '../../types';
 
 const { width } = Dimensions.get('window');
 
+// Multi-Series Bar Chart Component
+const MultiSeriesBarChart = React.memo(({ data, activeFilters }: { data: MultiSeriesData, activeFilters: FilterType[] }) => {
+  if (!data || !data.labels || !data.series) {
+    return (
+      <View className="h-full bg-white rounded-2xl p-4 items-center justify-center">
+        <Text className="text-gray-500">No chart data available</Text>
+      </View>
+    );
+  }
+
+  // Calculate max value for each series separately for better scaling
+  const getMaxValueForSeries = (filter: FilterType) => {
+    return Math.max(...(data.series[filter] || [1]));
+  };
+
+  // Get overall max for reference
+  const overallMax = Math.max(
+    ...activeFilters.flatMap(filter => data.series[filter] || [])
+  );
+
+  const barWidth = 12; // Increased width for better visibility
+  const barSpacing = 3;
+  const groupSpacing = 16;
+
+  return (
+    <View className="h-full bg-white rounded-2xl p-4">
+      <Text className="text-center text-gray-600 text-sm mb-4">Multi-Series Progress Chart</Text>
+      
+      {/* Multi-series bars */}
+      <View className="flex-row justify-between items-end h-32 mb-4">
+        {data.labels.map((label: string, labelIndex: number) => (
+          <View key={labelIndex} className="items-center flex-1">
+            {/* Group of bars for each label */}
+            <View className="mb-2">
+              {/* Value labels row */}
+              <View 
+                className="flex-row justify-center mb-1"
+                style={{ gap: barSpacing }}
+              >
+                {activeFilters.map((filter) => {
+                  const value = data.series[filter][labelIndex] || 0;
+                  return (
+                    <Text 
+                      key={`label-${filter}`}
+                      className="text-xs text-gray-700 font-semibold text-center"
+                      style={{ 
+                        width: barWidth,
+                        fontSize: 8
+                      }}
+                    >
+                      {value}
+                    </Text>
+                  );
+                })}
+              </View>
+              
+              {/* Bars row */}
+              <View 
+                className="flex-row items-end justify-center"
+                style={{ gap: barSpacing }}
+              >
+                {activeFilters.map((filter, filterIndex) => {
+                  const value = data.series[filter][labelIndex] || 0;
+                  const seriesMax = getMaxValueForSeries(filter);
+                  
+                  // Simplified scaling - ensure all bars are visible
+                  let normalizedHeight;
+                  if (value === 0) {
+                    normalizedHeight = 6; // Small bar for zero values
+                  } else {
+                    const proportion = value / seriesMax;
+                    // Minimum 25px height for visibility, max 80px
+                    normalizedHeight = Math.max(25, proportion * 55 + 25);
+                  }
+                  
+                  return (
+                    <View
+                      key={filter}
+                      className="rounded-t-md"
+                      style={{
+                        width: barWidth,
+                        height: normalizedHeight,
+                        backgroundColor: TREND_COLORS[filter](),
+                        opacity: value === 0 ? 0.4 : 1,
+                        borderWidth: 0.5,
+                        borderColor: '#d1d5db',
+                      }}
+                    />
+                  );
+                })}
+              </View>
+            </View>
+            <Text className="text-xs text-gray-500 text-center" numberOfLines={1}>
+              {label}
+            </Text>
+          </View>
+        ))}
+      </View>
+      
+      {/* Legend */}
+      <View className="flex-row flex-wrap justify-center gap-3">
+        {activeFilters.map((filter) => (
+          <View key={filter} className="flex-row items-center gap-1">
+            <View 
+              className="w-3 h-3 rounded-sm"
+              style={{ backgroundColor: TREND_COLORS[filter]() }}
+            />
+            <Text className="text-xs text-gray-600">{FILTER_LABELS[filter]}</Text>
+          </View>
+        ))}
+      </View>
+      
+      {/* Value indicators */}
+      <View className="mt-3 px-2">
+        <Text className="text-xs text-gray-400 text-center">
+          Max: {overallMax.toLocaleString()} • Showing {activeFilters.length} series
+        </Text>
+        {/* Debug info */}
+        <View className="mt-2">
+          {activeFilters.map((filter) => (
+            <Text key={filter} className="text-xs text-gray-500 text-center">
+              {FILTER_LABELS[filter]}: {data.series[filter].join(', ')}
+            </Text>
+          ))}
+        </View>
+      </View>
+    </View>
+  );
+});
+
 const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  
+  // Simplified chart state management
+  const [timeRange, setTimeRange] = useState<TimeRange>('7d');
+  const [activeFilters, setActiveFilters] = useState<FilterType[]>(DEFAULT_ACTIVE_FILTERS);
 
   // Real-time timer calculation
   const calculateRealTimeTimer = (startTime: Date) => {
@@ -47,7 +189,6 @@ const Dashboard: React.FC = () => {
     return { days, hours, minutes, seconds };
   };
 
-
   const loadDashboardData = async () => {
     try {
       const data = await generateDashboardData();
@@ -60,11 +201,23 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadDashboardData();
-    setRefreshing(false);
+  // Simple chart helper functions
+  const handleTimeRangeChange = (newTimeRange: TimeRange) => {
+    setTimeRange(newTimeRange);
   };
+
+  const toggleFilter = (filter: FilterType) => {
+    if (activeFilters.includes(filter)) {
+      if (activeFilters.length > 1) {
+        setActiveFilters(activeFilters.filter(f => f !== filter));
+      }
+    } else {
+      setActiveFilters([...activeFilters, filter]);
+    }
+  };
+
+  // Get chart data
+  const chartData: MultiSeriesData = getProgressChartData(timeRange);
 
   useEffect(() => {
     loadDashboardData();
@@ -95,9 +248,6 @@ const Dashboard: React.FC = () => {
     <View className="flex-1 bg-gray-50">
       <ScrollView 
         className="flex-1"
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
@@ -189,18 +339,79 @@ const Dashboard: React.FC = () => {
 
         {/* Progress Chart */}
         <View className="px-6 mt-8">
-          <Text className="text-xl font-bold text-gray-900 mb-4">Weekly Progress</Text>
-          <View className="bg-white rounded-3xl p-4 shadow-xl border border-gray-100">
-            <LineChart
-              data={getProgressChartData()}
-              width={width - 80}
-              height={200}
-              chartConfig={chartConfig}
-              bezier
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-xl font-bold text-gray-900">Progress Trends</Text>
+          </View>
+          
+          <View className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100">
+            
+            {/* Time Range Selector */}
+            <View className="flex-row justify-center mb-6">
+              <View className="bg-gray-100 rounded-2xl p-1 flex-row">
+                {TIME_RANGE_OPTIONS.map((option) => (
+                  <TouchableOpacity
+                    key={option.value}
+                    className={`px-4 py-2 rounded-xl ${
+                      timeRange === option.value ? 'bg-red-400' : 'bg-transparent'
+                    }`}
+                    onPress={() => handleTimeRangeChange(option.value)}
+                  >
+                    <Text className={`text-sm font-medium ${
+                      timeRange === option.value ? 'text-white' : 'text-gray-600'
+                    }`}>
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Filter Indicators */}
+            <View className="mb-6 px-2">
+              <View className="flex-row flex-wrap justify-center items-center gap-x-3 gap-y-2">
+                {Object.entries(FILTER_LABELS).map(([filter, label]) => {
+                  const isActive = activeFilters.includes(filter as FilterType);
+                  return (
+                    <TouchableOpacity
+                      key={filter}
+                      className={`flex-row items-center gap-2 px-3 py-2 rounded-xl ${
+                        isActive ? 'bg-gray-50' : 'bg-transparent'
+                      }`}
+                      onPress={() => toggleFilter(filter as FilterType)}
+                      activeOpacity={0.7}
+                    >
+                      <View 
+                        className="w-3 h-3 rounded-full"
+                        style={{ 
+                          backgroundColor: isActive 
+                            ? TREND_COLORS[filter as FilterType]() 
+                            : '#d1d5db'
+                        }}
+                      />
+                      <Text className={`text-xs font-medium ${
+                        isActive ? 'text-gray-900' : 'text-gray-500'
+                      }`}>
+                        {label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Chart Container */}
+            <View 
               style={{
-                borderRadius: 16,
+                height: 200,
+                marginHorizontal: -24,
               }}
-            />
+            >
+              <MultiSeriesBarChart 
+                data={chartData}
+                activeFilters={activeFilters}
+              />
+            </View>
+
           </View>
         </View>
 
