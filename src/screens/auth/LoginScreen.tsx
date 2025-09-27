@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { storage } from '../../utils/storage';
+import { authAPI } from '../../api/auth';
 import { LoginScreenProps } from '../../types';
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onSwitchToRegister }) => {
@@ -22,17 +22,19 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onSwitchToReg
     setIsLoading(true);
 
     try {
-      // For now, simulate login with localStorage check
-      const userData = await storage.getUserData();
-      
-      if (userData && userData.email === email.toLowerCase()) {
-        // Simulate successful login
-        await storage.setAuthToken('demo_token_' + Date.now());
+      const response = await authAPI.login({
+        email: email.trim(),
+        password: password.trim(),
+      });
+
+      if (response.success && response.user) {
+        // Login successful
         onLoginSuccess();
       } else {
-        Alert.alert('Error', 'Invalid credentials. Please register first or check your email.');
+        Alert.alert('Error', response.error || 'Login failed. Please check your credentials.');
       }
     } catch (error) {
+      console.error('Login error:', error);
       Alert.alert('Error', 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);

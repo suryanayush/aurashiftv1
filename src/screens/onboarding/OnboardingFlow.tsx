@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { storage } from '../../utils/storage';
+import { onboardingAPI } from '../../api/auth';
 import { OnboardingFlowProps, OnboardingData } from '../../types';
 
 const MOTIVATION_OPTIONS = [
@@ -82,25 +82,17 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
     setIsLoading(true);
     
     try {
-      // Get existing user data
-      const existingUserData = await storage.getUserData();
-      
-      if (existingUserData) {
-        // Update user data with onboarding information
-        const updatedUserData = {
-          ...existingUserData,
-          smokingHistory: {
-            yearsSmoked: Number(onboardingData.yearsSmoked),
-            cigarettesPerDay: Number(onboardingData.cigarettesPerDay),
-            costPerPack: Number(onboardingData.costPerPack),
-            motivations: onboardingData.motivations,
-          },
-        };
+      const response = await onboardingAPI.completeOnboarding({
+        yearsSmoked: Number(onboardingData.yearsSmoked),
+        cigarettesPerDay: Number(onboardingData.cigarettesPerDay),
+        costPerPack: Number(onboardingData.costPerPack),
+        motivations: onboardingData.motivations,
+      });
 
-        await storage.saveUserData(updatedUserData);
+      if (response.success && response.user) {
+        // Update local storage for offline access
+        const { storage } = await import('../../utils/storage');
         await storage.setOnboardingCompleted(true);
-        
-        // Initialize timer and aura score
         await storage.setTimerStart(new Date());
         await storage.setAuraScore(0);
 
@@ -110,9 +102,10 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
           [{ text: 'Let\'s Go!', onPress: onComplete }]
         );
       } else {
-        Alert.alert('Error', 'User data not found. Please try logging in again.');
+        Alert.alert('Error', response.error || 'Failed to save onboarding data. Please try again.');
       }
     } catch (error) {
+      console.error('Onboarding completion error:', error);
       Alert.alert('Error', 'Failed to save onboarding data. Please try again.');
     } finally {
       setIsLoading(false);

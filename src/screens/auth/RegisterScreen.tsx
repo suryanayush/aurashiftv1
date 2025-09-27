@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { storage } from '../../utils/storage';
+import { authAPI } from '../../api/auth';
 import { RegisterScreenProps } from '../../types';
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onSwitchToLogin }) => {
@@ -48,37 +48,24 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onSw
     setIsLoading(true);
 
     try {
-      // Check if user already exists
-      const existingUser = await storage.getUserData();
-      if (existingUser && existingUser.email === formData.email.toLowerCase()) {
-        Alert.alert('Error', 'An account with this email already exists');
-        setIsLoading(false);
-        return;
-      }
-
-      // Create user data structure (without smoking history for now)
-      const userData = {
+      const response = await authAPI.register({
         displayName: formData.displayName.trim(),
         email: formData.email.toLowerCase().trim(),
-        smokingHistory: {
-          yearsSmoked: 0,
-          cigarettesPerDay: 0,
-          costPerPack: 10,
-          motivations: [],
-        },
-        createdAt: new Date().toISOString(),
-      };
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      });
 
-      // Save user data
-      await storage.saveUserData(userData);
-      await storage.setAuthToken('demo_token_' + Date.now());
-      
-      Alert.alert(
-        'Success', 
-        'Account created successfully! Let\'s complete your profile.',
-        [{ text: 'Continue', onPress: onRegisterSuccess }]
-      );
+      if (response.success && response.user) {
+        Alert.alert(
+          'Success', 
+          'Account created successfully! Let\'s complete your profile.',
+          [{ text: 'Continue', onPress: onRegisterSuccess }]
+        );
+      } else {
+        Alert.alert('Error', response.error || 'Registration failed. Please try again.');
+      }
     } catch (error) {
+      console.error('Registration error:', error);
       Alert.alert('Error', 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
