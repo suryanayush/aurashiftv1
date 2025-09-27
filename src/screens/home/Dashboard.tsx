@@ -69,11 +69,9 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     loadDashboardData();
     
-    // Update timer every second
+    // Update current time every second for real-time timer
     const interval = setInterval(() => {
-      if (dashboardData) {
-        loadDashboardData();
-      }
+      setCurrentTime(new Date());
     }, 1000);
 
     return () => clearInterval(interval);
@@ -120,15 +118,35 @@ const Dashboard: React.FC = () => {
         {/* Timer Card */}
         <View className="mx-6 -mt-6 bg-white rounded-3xl p-6 shadow-xl border border-gray-100">
           <View className="items-center">
-            <Text className="text-gray-500 text-sm font-medium mb-2">Smoke-Free Timer</Text>
-            <Text className="text-4xl font-bold text-gray-900 mb-2">
-              {dashboardData.timer.days} {dashboardData.timer.hours} {dashboardData.timer.minutes}
-            </Text>
-            <View className="flex-row space-x-6">
-              <Text className="text-gray-500 text-xs">Days</Text>
-              <Text className="text-gray-500 text-xs">Hours</Text>
-              <Text className="text-gray-500 text-xs">Minutes</Text>
-            </View>
+            <Text className="text-gray-500 text-sm font-medium mb-4">Smoke-Free Timer</Text>
+            {(() => {
+              const realTimeTimer = calculateRealTimeTimer(dashboardData.timer.startTime);
+              return (
+                <>
+                  <View className="flex-row items-center justify-center mb-3">
+                    <View className="items-center mx-3">
+                      <Text className="text-3xl font-bold text-gray-900">{realTimeTimer.days.toString().padStart(2, '0')}</Text>
+                      <Text className="text-gray-500 text-xs">Days</Text>
+                    </View>
+                    <Text className="text-2xl font-bold text-gray-400 mx-1">:</Text>
+                    <View className="items-center mx-3">
+                      <Text className="text-3xl font-bold text-gray-900">{realTimeTimer.hours.toString().padStart(2, '0')}</Text>
+                      <Text className="text-gray-500 text-xs">Hours</Text>
+                    </View>
+                    <Text className="text-2xl font-bold text-gray-400 mx-1">:</Text>
+                    <View className="items-center mx-3">
+                      <Text className="text-3xl font-bold text-gray-900">{realTimeTimer.minutes.toString().padStart(2, '0')}</Text>
+                      <Text className="text-gray-500 text-xs">Minutes</Text>
+                    </View>
+                    <Text className="text-2xl font-bold text-gray-400 mx-1">:</Text>
+                    <View className="items-center mx-3">
+                      <Text className="text-3xl font-bold text-red-500">{realTimeTimer.seconds.toString().padStart(2, '0')}</Text>
+                      <Text className="text-gray-500 text-xs">Seconds</Text>
+                    </View>
+                  </View>
+                </>
+              );
+            })()}
             <Text className="text-red-500 font-medium text-center mt-4 leading-5">
               {dashboardData.motivationalMessage}
             </Text>
@@ -143,7 +161,7 @@ const Dashboard: React.FC = () => {
             {/* Cigarettes Avoided */}
             <View className="bg-green-100 rounded-2xl p-4 w-[30%] mb-4 items-center">
               <View className="w-10 h-10 bg-green-200 rounded-xl items-center justify-center mb-3">
-                <View className="w-5 h-5 bg-green-500 rounded-lg" />
+                <Cigarette size={20} color="#22c55e" />
               </View>
               <Text className="text-2xl font-bold text-gray-900">{dashboardData.progress.cigarettesAvoided}</Text>
               <Text className="text-gray-600 text-xs text-center">Cigarettes avoided</Text>
@@ -152,7 +170,7 @@ const Dashboard: React.FC = () => {
             {/* Money Saved */}
             <View className="bg-blue-100 rounded-2xl p-4 w-[30%] mb-4 items-center">
               <View className="w-10 h-10 bg-blue-200 rounded-xl items-center justify-center mb-3">
-                <View className="w-5 h-5 bg-blue-500 rounded-lg" />
+                <DollarSign size={20} color="#3b82f6" />
               </View>
               <Text className="text-2xl font-bold text-gray-900">${dashboardData.progress.moneySaved}</Text>
               <Text className="text-gray-600 text-xs text-center">Total money saved</Text>
@@ -161,7 +179,7 @@ const Dashboard: React.FC = () => {
             {/* Health Score */}
             <View className="bg-red-100 rounded-2xl p-4 w-[30%] mb-4 items-center">
               <View className="w-10 h-10 bg-red-200 rounded-xl items-center justify-center mb-3">
-                <View className="w-5 h-5 bg-red-500 rounded-lg" />
+                <Heart size={20} color="#ef4444" />
               </View>
               <Text className="text-2xl font-bold text-gray-900">{dashboardData.progress.streakDays}</Text>
               <Text className="text-gray-600 text-xs text-center">Days smoke free</Text>
@@ -169,17 +187,20 @@ const Dashboard: React.FC = () => {
           </View>
         </View>
 
-        {/* Progress Chart Placeholder */}
+        {/* Progress Chart */}
         <View className="px-6 mt-8">
           <Text className="text-xl font-bold text-gray-900 mb-4">Weekly Progress</Text>
-          <View className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100">
-            <View className="h-48 bg-gray-50 rounded-2xl items-center justify-center">
-              <View className="w-16 h-16 bg-red-100 rounded-2xl items-center justify-center mb-4">
-                <View className="w-8 h-8 bg-red-400 rounded-xl" />
-              </View>
-              <Text className="text-gray-600 font-medium">Progress Chart</Text>
-              <Text className="text-gray-400 text-sm mt-1">Coming Soon</Text>
-            </View>
+          <View className="bg-white rounded-3xl p-4 shadow-xl border border-gray-100">
+            <LineChart
+              data={getProgressChartData()}
+              width={width - 80}
+              height={200}
+              chartConfig={chartConfig}
+              bezier
+              style={{
+                borderRadius: 16,
+              }}
+            />
           </View>
         </View>
 
@@ -188,24 +209,41 @@ const Dashboard: React.FC = () => {
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-xl font-bold text-gray-900">Daily log</Text>
             <TouchableOpacity className="bg-red-400 w-12 h-12 rounded-2xl items-center justify-center">
-              <Text className="text-white text-2xl font-bold">+</Text>
+              <Plus size={24} color="#ffffff" />
             </TouchableOpacity>
           </View>
           
           <View className="flex-row flex-wrap justify-between">
-            {dashboardData.quickActions.map((action) => (
-              <TouchableOpacity
-                key={action.id}
-                className="bg-white rounded-2xl p-4 w-[48%] mb-4 shadow-md border border-gray-100"
-                onPress={() => Alert.alert('Activity', `Log ${action.title} (+${action.points} points)`)}
-              >
-                <View className="w-10 h-10 bg-red-100 rounded-xl items-center justify-center mb-3">
-                  <View className="w-5 h-5 bg-red-400 rounded-lg" />
-                </View>
-                <Text className="text-gray-900 font-semibold">{action.title}</Text>
-                <Text className="text-gray-500 text-sm">+{action.points} points</Text>
-              </TouchableOpacity>
-            ))}
+            {dashboardData.quickActions.map((action) => {
+              const getIcon = (actionId: string) => {
+                switch (actionId) {
+                  case 'gym':
+                    return <Dumbbell size={20} color="#ef4444" />;
+                  case 'healthy_meal':
+                    return <Apple size={20} color="#ef4444" />;
+                  case 'skincare':
+                    return <Sparkles size={20} color="#ef4444" />;
+                  case 'event_social':
+                    return <Users size={20} color="#ef4444" />;
+                  default:
+                    return <Trophy size={20} color="#ef4444" />;
+                }
+              };
+
+              return (
+                <TouchableOpacity
+                  key={action.id}
+                  className="bg-white rounded-2xl p-4 w-[48%] mb-4 shadow-md border border-gray-100"
+                  onPress={() => Alert.alert('Activity', `Log ${action.title} (+${action.points} points)`)}
+                >
+                  <View className="w-10 h-10 bg-red-100 rounded-xl items-center justify-center mb-3">
+                    {getIcon(action.id)}
+                  </View>
+                  <Text className="text-gray-900 font-semibold">{action.title}</Text>
+                  <Text className="text-gray-500 text-sm">+{action.points} points</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
 
@@ -232,27 +270,37 @@ const Dashboard: React.FC = () => {
       <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 rounded-t-3xl shadow-2xl">
         <View className="flex-row justify-around items-center">
           <TouchableOpacity className="items-center py-2">
-            <View className="w-8 h-8 bg-red-400 rounded-xl mb-1" />
+            <View className="w-8 h-8 bg-red-100 rounded-xl mb-1 items-center justify-center">
+              <Home size={18} color="#ef4444" />
+            </View>
             <Text className="text-red-500 text-xs font-medium">Home</Text>
           </TouchableOpacity>
           
           <TouchableOpacity className="items-center py-2">
-            <View className="w-8 h-8 bg-gray-200 rounded-xl mb-1" />
+            <View className="w-8 h-8 bg-gray-100 rounded-xl mb-1 items-center justify-center">
+              <BarChart3 size={18} color="#9ca3af" />
+            </View>
             <Text className="text-gray-400 text-xs font-medium">Stats</Text>
           </TouchableOpacity>
           
           <TouchableOpacity className="items-center py-2">
-            <View className="w-8 h-8 bg-gray-200 rounded-xl mb-1" />
+            <View className="w-8 h-8 bg-gray-100 rounded-xl mb-1 items-center justify-center">
+              <Calendar size={18} color="#9ca3af" />
+            </View>
             <Text className="text-gray-400 text-xs font-medium">Calendar</Text>
           </TouchableOpacity>
           
           <TouchableOpacity className="items-center py-2">
-            <View className="w-8 h-8 bg-gray-200 rounded-xl mb-1" />
+            <View className="w-8 h-8 bg-gray-100 rounded-xl mb-1 items-center justify-center">
+              <MessageCircle size={18} color="#9ca3af" />
+            </View>
             <Text className="text-gray-400 text-xs font-medium">AI Coach</Text>
           </TouchableOpacity>
           
           <TouchableOpacity className="items-center py-2">
-            <View className="w-8 h-8 bg-gray-200 rounded-xl mb-1" />
+            <View className="w-8 h-8 bg-gray-100 rounded-xl mb-1 items-center justify-center">
+              <User size={18} color="#9ca3af" />
+            </View>
             <Text className="text-gray-400 text-xs font-medium">Profile</Text>
           </TouchableOpacity>
         </View>
