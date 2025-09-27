@@ -246,9 +246,9 @@ const Dashboard: React.FC = () => {
                 Level {dashboardData.user.level} • {dashboardData.user.auraScore} Points
               </Text>
             </View>
-            <View className="w-12 h-12 bg-white rounded-2xl items-center justify-center" style={{ opacity: 0.2 }}>
-              <View className="w-6 h-6 bg-white rounded-xl" />
-            </View>
+            <TouchableOpacity className="w-12 h-12 bg-white/20 rounded-2xl items-center justify-center">
+              <User size={24} color="#ffffff" />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -457,7 +457,7 @@ const Dashboard: React.FC = () => {
               return (
                 <TouchableOpacity
                   key={action.id}
-                  className={`${lightBg} rounded-2xl p-5 w-[48%] mb-4 border border-gray-100`}
+                  className={`${lightBg} rounded-2xl p-4 w-[48%] mb-4 border border-gray-100 flex-row items-center`}
                   style={{
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: 1 },
@@ -469,7 +469,7 @@ const Dashboard: React.FC = () => {
                   activeOpacity={0.8}
                 >
                   <View 
-                    className="w-12 h-12 rounded-xl items-center justify-center mb-4"
+                    className="w-10 h-10 rounded-xl items-center justify-center mr-3"
                     style={{
                       backgroundColor: bgColor,
                       shadowColor: '#000',
@@ -481,10 +481,12 @@ const Dashboard: React.FC = () => {
                   >
                     {icon}
                   </View>
-                  <Text className="text-gray-900 font-bold text-base mb-1">{action.title}</Text>
-                  <View className="flex-row items-center">
-                    <Text className="text-emerald-600 text-sm font-semibold">+{action.points}</Text>
-                    <Text className="text-gray-500 text-sm ml-1">points</Text>
+                  <View className="flex-1">
+                    <Text className="text-gray-900 font-bold text-sm mb-1">{action.title}</Text>
+                    <View className="flex-row items-center">
+                      <Text className="text-emerald-600 text-xs font-semibold">+{action.points}</Text>
+                      <Text className="text-gray-500 text-xs ml-1">points</Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
               );
