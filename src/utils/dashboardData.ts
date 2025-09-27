@@ -1,45 +1,5 @@
 import { storage } from './storage';
-
-export interface DashboardData {
-  user: {
-    displayName: string;
-    email: string;
-    level: number;
-    auraScore: number;
-  };
-  timer: {
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-    formatted: string;
-    startTime: Date;
-  };
-  progress: {
-    cigarettesAvoided: number;
-    moneySaved: number;
-    healthScore: number;
-    streakDays: number;
-  };
-  activities: {
-    today: number;
-    thisWeek: number;
-    totalPositive: number;
-  };
-  achievements: {
-    recent: string[];
-    total: number;
-    nextMilestone: string;
-  };
-  motivationalMessage: string;
-  quickActions: {
-    id: string;
-    title: string;
-    icon: string;
-    points: number;
-    color: string;
-  }[];
-}
+import { DashboardData, TimerData } from '../types';
 
 // Calculate time difference
 const calculateTimeDifference = (startTime: Date, currentTime: Date = new Date()) => {

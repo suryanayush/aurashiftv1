@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StoredUserData } from '../types';
 
 // Storage keys
 export const STORAGE_KEYS = {
@@ -9,19 +10,6 @@ export const STORAGE_KEYS = {
   AURA_SCORE: 'aurashift_aura_score',
   ACTIVITIES: 'aurashift_activities',
 } as const;
-
-// User data interface
-export interface StoredUserData {
-  displayName: string;
-  email: string;
-  smokingHistory: {
-    yearsSmoked: number;
-    cigarettesPerDay: number;
-    costPerPack?: number;
-    motivations: string[];
-  };
-  createdAt: string;
-}
 
 // Storage utility functions
 export const storage = {

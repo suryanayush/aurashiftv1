@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
-import { generateDashboardData, DashboardData } from '../../utils/dashboardData';
+import { generateDashboardData } from '../../utils/dashboardData';
+import { DashboardData } from '../../types';
 
 const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);

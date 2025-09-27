@@ -1,10 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Dimensions } from 'react-native';
 import LottieView from 'lottie-react-native';
-
-interface SplashScreenProps {
-  onAnimationFinish: () => void;
-}
+import { SplashScreenProps } from '../../types';
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationFinish }) => {
   const animationRef = useRef<LottieView>(null);
@@ -15,8 +12,11 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationFinish }) => {
     animationRef.current?.play();
   }, []);
 
-  const handleAnimationFinish = () => {
-    onAnimationFinish();
+  const handleAnimationFinish = (isCancelled?: boolean) => {
+    // Only call onAnimationFinish if animation completed successfully (not cancelled)
+    if (!isCancelled) {
+      onAnimationFinish();
+    }
   };
 
   return (

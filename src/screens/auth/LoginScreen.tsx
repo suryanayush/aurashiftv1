@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { storage } from '../../utils/storage';
-
-interface LoginScreenProps {
-  onLoginSuccess: () => void;
-  onSwitchToRegister: () => void;
-}
+import { LoginScreenProps } from '../../types';
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onSwitchToRegister }) => {
   const [email, setEmail] = useState('');

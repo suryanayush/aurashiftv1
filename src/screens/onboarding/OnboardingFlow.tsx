@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { storage } from '../../utils/storage';
-
-interface OnboardingFlowProps {
-  onComplete: () => void;
-}
-
-interface OnboardingData {
-  yearsSmoked: string;
-  cigarettesPerDay: string;
-  costPerPack: string;
-  motivations: string[];
-}
+import { OnboardingFlowProps, OnboardingData } from '../../types';
 
 const MOTIVATION_OPTIONS = [
   'Health & Wellness',

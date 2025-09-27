@@ -5,16 +5,16 @@ import { LoginScreen, RegisterScreen } from 'src/screens/auth';
 import { OnboardingFlow } from 'src/screens/onboarding';
 import Dashboard from 'src/screens/home/Dashboard';
 import { storage } from 'src/utils/storage';
+import { AppState, AuthMode } from 'src/types';
 
 import './global.css';
-
-type AppState = 'splash' | 'auth' | 'onboarding' | 'dashboard';
-type AuthMode = 'login' | 'register';
 
 export default function App() {
   const [appState, setAppState] = useState<AppState>('splash');
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
+  const [animationCompleted, setAnimationCompleted] = useState(false);
 
   // Check app state on startup
   useEffect(() => {
@@ -55,11 +55,15 @@ export default function App() {
   };
 
   const handleSplashFinish = () => {
-    if (!isLoading) {
-      // App state has been determined, transition from splash
-      // Keep current appState (auth, onboarding, or dashboard)
-    }
+    setAnimationCompleted(true);
   };
+
+  // Hide splash screen only when both animation is completed and app state is determined
+  useEffect(() => {
+    if (animationCompleted && !isLoading) {
+      setShowSplash(false);
+    }
+  }, [animationCompleted, isLoading]);
 
   const handleLoginSuccess = () => {
     checkAppState(); // Re-check state after login
@@ -82,7 +86,7 @@ export default function App() {
   };
 
   // Show splash screen while loading or during splash animation
-  if (appState === 'splash' || isLoading) {
+  if (showSplash || isLoading) {
     return (
       <>
         <SplashScreen onAnimationFinish={handleSplashFinish} />

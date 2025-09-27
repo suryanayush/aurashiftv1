@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { storage } from '../../utils/storage';
-
-interface RegisterScreenProps {
-  onRegisterSuccess: () => void;
-  onSwitchToLogin: () => void;
-}
+import { RegisterScreenProps } from '../../types';
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
