@@ -9,6 +9,8 @@ export interface IUser extends Document {
   smokingHistory?: SmokingProfile;
   onboardingCompleted: boolean;
   auraScore: number;
+  cigarettesAvoided: number;
+  totalMoneySaved: number;
   streakStartTime?: Date;
   lastSmoked?: Date;
   createdAt: Date;
@@ -73,6 +75,16 @@ const userSchema = new Schema({
     default: false,
   },
   auraScore: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  cigarettesAvoided: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  totalMoneySaved: {
     type: Number,
     default: 0,
     min: 0,

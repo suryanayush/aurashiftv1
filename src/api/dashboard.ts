@@ -5,6 +5,7 @@ export interface DashboardStats {
   level: number;
   moneySaved: number;
   cigarettesAvoided: number;
+  daysSmokeFree: number;
 }
 
 export interface DashboardUser {
@@ -12,6 +13,8 @@ export interface DashboardUser {
   email: string;
   displayName: string;
   auraScore: number;
+  cigarettesAvoided: number;
+  totalMoneySaved: number;
   onboardingCompleted: boolean;
   smokingHistory?: {
     yearsSmoked: number;

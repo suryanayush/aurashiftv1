@@ -35,6 +35,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       password,
       onboardingCompleted: false,
       auraScore: 0,
+      cigarettesAvoided: 0,
+      totalMoneySaved: 0,
     });
 
     await user.save();

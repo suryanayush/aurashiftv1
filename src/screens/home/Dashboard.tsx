@@ -366,7 +366,7 @@ const Dashboard: React.FC = () => {
                 <Heart size={20} color="#ef4444" />
               </View>
               <Text className="text-2xl font-bold text-gray-900">
-                {userData ? userData.stats.smokeFreeTime : dashboardData.progress.streakDays}
+                {userData ? userData.stats.daysSmokeFree : dashboardData.progress.streakDays}
               </Text>
               <Text className="text-gray-600 text-xs text-center">Days smoke free</Text>
             </View>

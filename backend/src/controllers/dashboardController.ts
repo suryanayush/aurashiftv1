@@ -22,29 +22,24 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
 
     const now = new Date();
     let smokeFreeTime = 0;
-    let level = 1;
-    let moneySaved = 0;
     
     if (user.streakStartTime) {
       smokeFreeTime = Math.floor((now.getTime() - user.streakStartTime.getTime()) / (1000 * 60 * 60 * 24)); // days
     }
 
-    level = Math.floor(user.auraScore / 100) + 1;
-
-    if (user.smokingHistory) {
-      const { cigarettesPerDay, costPerPack } = user.smokingHistory;
-      const cigarettesPerPack = 20; // Standard pack size
-      const dailyCost = (cigarettesPerDay / cigarettesPerPack) * costPerPack;
-      moneySaved = Math.round(dailyCost * smokeFreeTime * 100) / 100; // Round to 2 decimal places
-    }
+    // Calculate level based on aura score (every 100 points = 1 level)
+    const level = Math.floor(user.auraScore / 100) + 1;
 
     const dashboardData = {
       ...user.toJSON(),
+      cigarettesAvoided: user.cigarettesAvoided,
+      totalMoneySaved: user.totalMoneySaved,
       stats: {
         smokeFreeTime,
         level,
-        moneySaved,
-        cigarettesAvoided: user.smokingHistory ? user.smokingHistory.cigarettesPerDay * smokeFreeTime : 0,
+        moneySaved: user.totalMoneySaved,
+        cigarettesAvoided: user.cigarettesAvoided,
+        daysSmokeFree: smokeFreeTime,
       }
     };
 
