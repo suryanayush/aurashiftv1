@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, RefreshControl, Alert, Dimensions } from 'react-native';
 import { generateDashboardData } from '../../utils/dashboardData';
 import { DashboardData } from '../../types';
+
+const { width } = Dimensions.get('window');
 
 const Dashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
 
   const loadDashboardData = async () => {
     try {
@@ -41,125 +44,183 @@ const Dashboard: React.FC = () => {
 
   if (isLoading || !dashboardData) {
     return (
-      <View className="flex-1 bg-red-50 justify-center items-center">
-        <Text className="text-lg text-black">Loading your dashboard...</Text>
+      <View className="flex-1 bg-gray-50 justify-center items-center">
+        <View className="bg-white rounded-3xl p-8 shadow-xl">
+          <View className="w-16 h-16 bg-red-100 rounded-2xl items-center justify-center mb-4 mx-auto">
+            <View className="w-8 h-8 bg-red-400 rounded-xl" />
+          </View>
+          <Text className="text-lg text-gray-900 text-center font-semibold">Loading Dashboard...</Text>
+          <Text className="text-gray-500 text-center mt-2">Preparing your progress</Text>
+        </View>
       </View>
     );
   }
 
   return (
-    <ScrollView 
-      className="flex-1 bg-red-50"
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      {/* Header */}
-      <View className="bg-gradient-to-br from-red-300 to-red-400 px-6 pt-12 pb-8">
-        <Text className="text-white text-lg font-medium">Hi, {dashboardData.user.displayName}!</Text>
-        <Text className="text-red-100 text-sm mt-1">Level {dashboardData.user.level} • {dashboardData.user.auraScore} Aura Points</Text>
-      </View>
-
-      {/* Timer Section */}
-      <View className="mx-6 -mt-4 bg-white rounded-2xl p-6 shadow-lg">
-        <Text className="text-center text-black text-sm mb-2">Smoke-Free Timer</Text>
-        <Text className="text-center text-3xl font-bold text-black mb-2">
-          {dashboardData.timer.formatted}
-        </Text>
-        <Text className="text-center text-red-600 font-medium">
-          {dashboardData.motivationalMessage}
-        </Text>
-      </View>
-
-      {/* Progress Cards */}
-      <View className="px-6 mt-6">
-        <Text className="text-xl font-bold text-black mb-4">Your Progress</Text>
-        
-        <View className="flex-row flex-wrap justify-between">
-          {/* Cigarettes Avoided */}
-          <View className="bg-white rounded-xl p-4 shadow-md w-[48%] mb-4">
-            <Text className="text-2xl font-bold text-red-500">{dashboardData.progress.cigarettesAvoided}</Text>
-            <Text className="text-black text-sm">Cigarettes Avoided</Text>
-          </View>
-
-          {/* Money Saved */}
-          <View className="bg-white rounded-xl p-4 shadow-md w-[48%] mb-4">
-            <Text className="text-2xl font-bold text-red-400">${dashboardData.progress.moneySaved}</Text>
-            <Text className="text-black text-sm">Money Saved</Text>
-          </View>
-
-          {/* Streak Days */}
-          <View className="bg-white rounded-xl p-4 shadow-md w-[48%] mb-4">
-            <Text className="text-2xl font-bold text-red-500">{dashboardData.progress.streakDays}</Text>
-            <Text className="text-black text-sm">Days Streak</Text>
-          </View>
-
-          {/* Health Score */}
-          <View className="bg-white rounded-xl p-4 shadow-md w-[48%] mb-4">
-            <Text className="text-2xl font-bold text-red-400">{dashboardData.progress.healthScore}%</Text>
-            <Text className="text-black text-sm">Health Score</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Quick Actions */}
-      <View className="px-6 mt-6">
-        <Text className="text-xl font-bold text-black mb-4">Log Activity</Text>
-        
-        <View className="flex-row flex-wrap justify-between">
-          {dashboardData.quickActions.map((action) => (
-            <TouchableOpacity
-              key={action.id}
-              className="bg-red-400 rounded-xl p-4 w-[48%] mb-4"
-              onPress={() => Alert.alert('Activity', `Log ${action.title} (+${action.points} points)`)}
-            >
-              <Text className="text-white font-bold text-center">{action.title}</Text>
-              <Text className="text-white/80 text-sm text-center">+{action.points} points</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      {/* Achievements */}
-      {dashboardData.achievements.recent.length > 0 && (
-        <View className="px-6 mt-6">
-          <Text className="text-xl font-bold text-black mb-4">Recent Achievements</Text>
-          
-          <View className="bg-white rounded-xl p-4 shadow-md">
-            {dashboardData.achievements.recent.map((achievement, index) => (
-              <View key={index} className="flex-row items-center py-2">
-                <View className="w-3 h-3 bg-red-400 rounded-full mr-3" />
-                <Text className="text-black font-medium">{achievement}</Text>
-              </View>
-            ))}
-            
-            <View className="border-t border-gray-200 mt-4 pt-4">
-              <Text className="text-black text-sm">
-                Next milestone: {dashboardData.achievements.nextMilestone}
+    <View className="flex-1 bg-gray-50">
+      <ScrollView 
+        className="flex-1"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View className="bg-red-400 pt-16 pb-8" style={{ borderBottomLeftRadius: 40, borderBottomRightRadius: 40 }}>
+          <View className="px-6 flex-row justify-between items-center">
+            <View>
+              <Text className="text-white text-2xl font-bold">Hi, {dashboardData.user.displayName.split(' ')[0]}!</Text>
+              <Text className="text-red-100 text-base mt-1">
+                Level {dashboardData.user.level} • {dashboardData.user.auraScore} Points
               </Text>
+            </View>
+            <View className="w-12 h-12 bg-white rounded-2xl items-center justify-center" style={{ opacity: 0.2 }}>
+              <View className="w-6 h-6 bg-white rounded-xl" />
             </View>
           </View>
         </View>
-      )}
 
-      {/* I Smoked Button */}
-      <View className="px-6 mt-6 mb-8">
-        <TouchableOpacity
-          className="bg-red-600 rounded-xl p-4"
-          onPress={() => Alert.alert(
-            'Reset Timer?',
-            'This will reset your smoke-free timer and deduct 10 points from your Aura score.',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'Reset', style: 'destructive', onPress: () => Alert.alert('Feature', 'Timer reset functionality will be implemented') }
-            ]
-          )}
-        >
-          <Text className="text-white font-bold text-center text-lg">I Smoked</Text>
-          <Text className="text-red-100 text-center text-sm">-10 Aura Points</Text>
-        </TouchableOpacity>
+        {/* Timer Card */}
+        <View className="mx-6 -mt-6 bg-white rounded-3xl p-6 shadow-xl border border-gray-100">
+          <View className="items-center">
+            <Text className="text-gray-500 text-sm font-medium mb-2">Smoke-Free Timer</Text>
+            <Text className="text-4xl font-bold text-gray-900 mb-2">
+              {dashboardData.timer.days} {dashboardData.timer.hours} {dashboardData.timer.minutes}
+            </Text>
+            <View className="flex-row space-x-6">
+              <Text className="text-gray-500 text-xs">Days</Text>
+              <Text className="text-gray-500 text-xs">Hours</Text>
+              <Text className="text-gray-500 text-xs">Minutes</Text>
+            </View>
+            <Text className="text-red-500 font-medium text-center mt-4 leading-5">
+              {dashboardData.motivationalMessage}
+            </Text>
+          </View>
+        </View>
+
+        {/* Progress Cards */}
+        <View className="px-6 mt-8">
+          <Text className="text-xl font-bold text-gray-900 mb-4">Other Progresses</Text>
+          
+          <View className="flex-row flex-wrap justify-between">
+            {/* Cigarettes Avoided */}
+            <View className="bg-green-100 rounded-2xl p-4 w-[30%] mb-4 items-center">
+              <View className="w-10 h-10 bg-green-200 rounded-xl items-center justify-center mb-3">
+                <View className="w-5 h-5 bg-green-500 rounded-lg" />
+              </View>
+              <Text className="text-2xl font-bold text-gray-900">{dashboardData.progress.cigarettesAvoided}</Text>
+              <Text className="text-gray-600 text-xs text-center">Cigarettes avoided</Text>
+            </View>
+
+            {/* Money Saved */}
+            <View className="bg-blue-100 rounded-2xl p-4 w-[30%] mb-4 items-center">
+              <View className="w-10 h-10 bg-blue-200 rounded-xl items-center justify-center mb-3">
+                <View className="w-5 h-5 bg-blue-500 rounded-lg" />
+              </View>
+              <Text className="text-2xl font-bold text-gray-900">${dashboardData.progress.moneySaved}</Text>
+              <Text className="text-gray-600 text-xs text-center">Total money saved</Text>
+            </View>
+
+            {/* Health Score */}
+            <View className="bg-red-100 rounded-2xl p-4 w-[30%] mb-4 items-center">
+              <View className="w-10 h-10 bg-red-200 rounded-xl items-center justify-center mb-3">
+                <View className="w-5 h-5 bg-red-500 rounded-lg" />
+              </View>
+              <Text className="text-2xl font-bold text-gray-900">{dashboardData.progress.streakDays}</Text>
+              <Text className="text-gray-600 text-xs text-center">Days smoke free</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Progress Chart Placeholder */}
+        <View className="px-6 mt-8">
+          <Text className="text-xl font-bold text-gray-900 mb-4">Weekly Progress</Text>
+          <View className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100">
+            <View className="h-48 bg-gray-50 rounded-2xl items-center justify-center">
+              <View className="w-16 h-16 bg-red-100 rounded-2xl items-center justify-center mb-4">
+                <View className="w-8 h-8 bg-red-400 rounded-xl" />
+              </View>
+              <Text className="text-gray-600 font-medium">Progress Chart</Text>
+              <Text className="text-gray-400 text-sm mt-1">Coming Soon</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Daily Log */}
+        <View className="px-6 mt-8">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-xl font-bold text-gray-900">Daily log</Text>
+            <TouchableOpacity className="bg-red-400 w-12 h-12 rounded-2xl items-center justify-center">
+              <Text className="text-white text-2xl font-bold">+</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <View className="flex-row flex-wrap justify-between">
+            {dashboardData.quickActions.map((action) => (
+              <TouchableOpacity
+                key={action.id}
+                className="bg-white rounded-2xl p-4 w-[48%] mb-4 shadow-md border border-gray-100"
+                onPress={() => Alert.alert('Activity', `Log ${action.title} (+${action.points} points)`)}
+              >
+                <View className="w-10 h-10 bg-red-100 rounded-xl items-center justify-center mb-3">
+                  <View className="w-5 h-5 bg-red-400 rounded-lg" />
+                </View>
+                <Text className="text-gray-900 font-semibold">{action.title}</Text>
+                <Text className="text-gray-500 text-sm">+{action.points} points</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* I Smoked Button */}
+        <View className="px-6 mt-8 mb-32">
+          <TouchableOpacity
+            className="bg-red-500 rounded-2xl p-4 shadow-lg"
+            onPress={() => Alert.alert(
+              'Reset Timer?',
+              'This will reset your smoke-free timer and deduct 10 points from your Aura score.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Reset', style: 'destructive', onPress: () => Alert.alert('Feature', 'Timer reset functionality will be implemented') }
+              ]
+            )}
+          >
+            <Text className="text-white font-bold text-center text-lg">I Smoked</Text>
+            <Text className="text-red-100 text-center text-sm">-10 Aura Points</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+
+      {/* Bottom Navigation */}
+      <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 rounded-t-3xl shadow-2xl">
+        <View className="flex-row justify-around items-center">
+          <TouchableOpacity className="items-center py-2">
+            <View className="w-8 h-8 bg-red-400 rounded-xl mb-1" />
+            <Text className="text-red-500 text-xs font-medium">Home</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity className="items-center py-2">
+            <View className="w-8 h-8 bg-gray-200 rounded-xl mb-1" />
+            <Text className="text-gray-400 text-xs font-medium">Stats</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity className="items-center py-2">
+            <View className="w-8 h-8 bg-gray-200 rounded-xl mb-1" />
+            <Text className="text-gray-400 text-xs font-medium">Calendar</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity className="items-center py-2">
+            <View className="w-8 h-8 bg-gray-200 rounded-xl mb-1" />
+            <Text className="text-gray-400 text-xs font-medium">AI Coach</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity className="items-center py-2">
+            <View className="w-8 h-8 bg-gray-200 rounded-xl mb-1" />
+            <Text className="text-gray-400 text-xs font-medium">Profile</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

@@ -40,57 +40,67 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onSwitchToReg
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-gradient-to-br from-red-300 to-red-400"
-    >
-      <View className="flex-1 justify-center px-8">
-        {/* Header */}
-        <View className="items-center mb-12">
-          <Text className="text-4xl font-bold text-white mb-2">Welcome Back</Text>
-          <Text className="text-lg text-red-100 text-center">
+    <View className="flex-1 bg-gray-50">
+      {/* Header Background */}
+      <View className="bg-red-400 pt-16 pb-8" style={{ borderBottomLeftRadius: 40, borderBottomRightRadius: 40 }}>
+        <View className="px-8">
+          <Text className="text-3xl font-bold text-white mb-2">Welcome Back</Text>
+          <Text className="text-red-100 text-base">
             Continue your smoke-free journey
           </Text>
         </View>
+      </View>
 
-        {/* Login Form */}
-        <View className="bg-white rounded-3xl p-8 shadow-2xl">
-          <Text className="text-2xl font-bold text-black text-center mb-8">
-            Sign In
-          </Text>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1 px-6 -mt-6"
+      >
+        {/* Login Card */}
+        <View className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+          <View className="items-center mb-8">
+            <View className="w-16 h-16 bg-red-100 rounded-2xl items-center justify-center mb-4">
+              <View className="w-8 h-8 bg-red-400 rounded-xl" />
+            </View>
+            <Text className="text-2xl font-bold text-gray-900">Sign In</Text>
+            <Text className="text-gray-500 text-sm mt-1">Enter your credentials to continue</Text>
+          </View>
 
           {/* Email Input */}
           <View className="mb-6">
-            <Text className="text-black font-medium mb-2">Email</Text>
-            <TextInput
-              className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base"
-              placeholder="Enter your email"
-              placeholderTextColor="#9CA3AF"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
+            <Text className="text-gray-700 font-semibold mb-3">Email Address</Text>
+            <View className="relative">
+              <TextInput
+                className="bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-4 text-gray-900 text-base focus:border-red-400"
+                placeholder="Enter your email"
+                placeholderTextColor="#9CA3AF"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
           </View>
 
           {/* Password Input */}
           <View className="mb-8">
-            <Text className="text-black font-medium mb-2">Password</Text>
-            <TextInput
-              className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base"
-              placeholder="Enter your password"
-              placeholderTextColor="#9CA3AF"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-            />
+            <Text className="text-gray-700 font-semibold mb-3">Password</Text>
+            <View className="relative">
+              <TextInput
+                className="bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-4 text-gray-900 text-base focus:border-red-400"
+                placeholder="Enter your password"
+                placeholderTextColor="#9CA3AF"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+            </View>
           </View>
 
           {/* Login Button */}
           <TouchableOpacity
-            className={`rounded-xl py-4 mb-6 ${isLoading ? 'bg-gray-400' : 'bg-gradient-to-r from-red-400 to-red-500'}`}
+            className={`rounded-2xl py-4 mb-6 shadow-lg ${isLoading ? 'bg-gray-400' : 'bg-red-500'}`}
             onPress={handleLogin}
             disabled={isLoading}
           >
@@ -100,20 +110,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onSwitchToReg
           </TouchableOpacity>
 
           {/* Switch to Register */}
-          <View className="flex-row justify-center">
-            <Text className="text-black">Don't have an account? </Text>
+          <View className="flex-row justify-center items-center">
+            <Text className="text-gray-600">Don't have an account? </Text>
             <TouchableOpacity onPress={onSwitchToRegister}>
-              <Text className="text-red-600 font-bold">Sign Up</Text>
+              <Text className="text-red-500 font-bold">Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Footer */}
-        <Text className="text-red-100 text-center mt-8 text-sm">
-          Your journey to wellness starts here
-        </Text>
-      </View>
-    </KeyboardAvoidingView>
+        <View className="flex-1 justify-end pb-8">
+          <Text className="text-gray-500 text-center text-sm">
+            Your journey to wellness starts here
+          </Text>
+        </View>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 

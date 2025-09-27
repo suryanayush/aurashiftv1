@@ -86,31 +86,37 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onSw
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-gradient-to-br from-red-300 to-red-500"
-    >
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="flex-1 justify-center px-8 py-12">
-          {/* Header */}
-          <View className="items-center mb-8">
-            <Text className="text-4xl font-bold text-white mb-2">Join AuraShift</Text>
-            <Text className="text-lg text-red-100 text-center">
-              Start your transformation journey today
-            </Text>
-          </View>
+    <View className="flex-1 bg-gray-50">
+      {/* Header Background */}
+      <View className="bg-red-400 pt-16 pb-8" style={{ borderBottomLeftRadius: 40, borderBottomRightRadius: 40 }}>
+        <View className="px-8">
+          <Text className="text-3xl font-bold text-white mb-2">Join AuraShift</Text>
+          <Text className="text-red-100 text-base">
+            Start your transformation journey today
+          </Text>
+        </View>
+      </View>
 
-          {/* Register Form */}
-          <View className="bg-white rounded-3xl p-8 shadow-2xl">
-            <Text className="text-2xl font-bold text-black text-center mb-8">
-              Create Account
-            </Text>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
+      >
+        <ScrollView className="flex-1 px-6 -mt-6" showsVerticalScrollIndicator={false}>
+          {/* Register Card */}
+          <View className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 mb-8">
+            <View className="items-center mb-8">
+              <View className="w-16 h-16 bg-red-100 rounded-2xl items-center justify-center mb-4">
+                <View className="w-8 h-8 bg-red-400 rounded-xl" />
+              </View>
+              <Text className="text-2xl font-bold text-gray-900">Create Account</Text>
+              <Text className="text-gray-500 text-sm mt-1">Fill in your details to get started</Text>
+            </View>
 
             {/* Name Input */}
-            <View className="mb-4">
-              <Text className="text-black font-medium mb-2">Full Name</Text>
+            <View className="mb-5">
+              <Text className="text-gray-700 font-semibold mb-3">Full Name</Text>
               <TextInput
-                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base"
+                className="bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-4 text-gray-900 text-base focus:border-red-400"
                 placeholder="Enter your full name"
                 placeholderTextColor="#9CA3AF"
                 value={formData.displayName}
@@ -120,10 +126,10 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onSw
             </View>
 
             {/* Email Input */}
-            <View className="mb-4">
-              <Text className="text-black font-medium mb-2">Email</Text>
+            <View className="mb-5">
+              <Text className="text-gray-700 font-semibold mb-3">Email Address</Text>
               <TextInput
-                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base"
+                className="bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-4 text-gray-900 text-base focus:border-red-400"
                 placeholder="Enter your email"
                 placeholderTextColor="#9CA3AF"
                 value={formData.email}
@@ -135,10 +141,10 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onSw
             </View>
 
             {/* Password Input */}
-            <View className="mb-4">
-              <Text className="text-black font-medium mb-2">Password</Text>
+            <View className="mb-5">
+              <Text className="text-gray-700 font-semibold mb-3">Password</Text>
               <TextInput
-                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base"
+                className="bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-4 text-gray-900 text-base focus:border-red-400"
                 placeholder="Create a password (min 6 characters)"
                 placeholderTextColor="#9CA3AF"
                 value={formData.password}
@@ -150,9 +156,9 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onSw
 
             {/* Confirm Password Input */}
             <View className="mb-8">
-              <Text className="text-black font-medium mb-2">Confirm Password</Text>
+              <Text className="text-gray-700 font-semibold mb-3">Confirm Password</Text>
               <TextInput
-                className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-black text-base"
+                className="bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-4 text-gray-900 text-base focus:border-red-400"
                 placeholder="Confirm your password"
                 placeholderTextColor="#9CA3AF"
                 value={formData.confirmPassword}
@@ -164,7 +170,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onSw
 
             {/* Register Button */}
             <TouchableOpacity
-              className={`rounded-xl py-4 mb-6 ${isLoading ? 'bg-gray-400' : 'bg-gradient-to-r from-red-400 to-red-500'}`}
+              className={`rounded-2xl py-4 mb-6 shadow-lg ${isLoading ? 'bg-gray-400' : 'bg-red-500'}`}
               onPress={handleRegister}
               disabled={isLoading}
             >
@@ -174,21 +180,23 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegisterSuccess, onSw
             </TouchableOpacity>
 
             {/* Switch to Login */}
-            <View className="flex-row justify-center">
-              <Text className="text-black">Already have an account? </Text>
+            <View className="flex-row justify-center items-center">
+              <Text className="text-gray-600">Already have an account? </Text>
               <TouchableOpacity onPress={onSwitchToLogin}>
-                <Text className="text-red-600 font-bold">Sign In</Text>
+                <Text className="text-red-500 font-bold">Sign In</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Footer */}
-          <Text className="text-red-100 text-center mt-8 text-sm">
-            By creating an account, you're taking the first step towards a healthier you
-          </Text>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <View className="pb-8">
+            <Text className="text-gray-500 text-center text-sm">
+              By creating an account, you're taking the first step towards a healthier you
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 

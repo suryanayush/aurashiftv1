@@ -221,32 +221,59 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-gradient-to-br from-red-200 to-red-400"
-    >
-      <View className="flex-1 px-8 py-12">
-        {/* Progress Indicator */}
-        <View className="flex-row justify-center mb-8">
-          {[1, 2, 3].map((step) => (
-            <View
-              key={step}
-              className={`w-3 h-3 rounded-full mx-1 ${
-                step <= currentStep ? 'bg-white' : 'bg-white/30'
-              }`}
-            />
-          ))}
+    <View className="flex-1 bg-gray-50">
+      {/* Header */}
+      <View className="bg-red-400 pt-16 pb-12" style={{ borderBottomLeftRadius: 40, borderBottomRightRadius: 40 }}>
+        <View className="px-8">
+          <Text className="text-3xl font-bold text-white mb-2">Setup Profile</Text>
+          <Text className="text-red-100 text-base mb-8">
+            Help us personalize your journey
+          </Text>
+          
+          {/* Modern Progress Indicator */}
+          <View className="flex-row justify-between items-center">
+            {[1, 2, 3].map((step, index) => (
+              <View key={step} className="flex-1 flex-row items-center">
+                <View
+                  className={`w-10 h-10 rounded-2xl items-center justify-center ${
+                    step <= currentStep ? 'bg-white' : 'bg-white'
+                  }`}
+                  style={{ opacity: step <= currentStep ? 1 : 0.2 }}
+                >
+                  <Text className={`font-bold ${
+                    step <= currentStep ? 'text-red-500' : 'text-white'
+                  }`}
+                  style={{ opacity: step <= currentStep ? 1 : 0.6 }}>
+                    {step}
+                  </Text>
+                </View>
+                {index < 2 && (
+                  <View 
+                    className={`flex-1 h-1 mx-3 rounded-full ${
+                      step < currentStep ? 'bg-white' : 'bg-white'
+                    }`}
+                    style={{ opacity: step < currentStep ? 1 : 0.2 }}
+                  />
+                )}
+              </View>
+            ))}
+          </View>
         </View>
+      </View>
 
-        {/* Content */}
-        <View className="bg-white rounded-3xl p-8 shadow-2xl flex-1">
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1 px-6 -mt-6"
+      >
+        {/* Content Card */}
+        <View className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 flex-1">
           {renderStep()}
 
           {/* Navigation Buttons */}
           <View className="flex-row justify-between mt-8">
             <TouchableOpacity
-              className={`flex-1 py-4 rounded-xl mr-2 ${
-                currentStep === 1 ? 'bg-gray-200' : 'bg-gray-100 border border-gray-300'
+              className={`flex-1 py-4 rounded-2xl mr-3 ${
+                currentStep === 1 ? 'bg-gray-100' : 'bg-gray-100 border-2 border-gray-200'
               }`}
               onPress={handleBack}
               disabled={currentStep === 1}
@@ -259,8 +286,8 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className={`flex-1 py-4 rounded-xl ml-2 ${
-                isLoading ? 'bg-gray-400' : 'bg-gradient-to-r from-red-400 to-red-500'
+              className={`flex-1 py-4 rounded-2xl ml-3 shadow-lg ${
+                isLoading ? 'bg-gray-400' : 'bg-red-500'
               }`}
               onPress={handleNext}
               disabled={isLoading}
@@ -271,8 +298,8 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 
