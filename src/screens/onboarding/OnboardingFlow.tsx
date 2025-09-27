@@ -116,7 +116,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
     switch (currentStep) {
       case 1:
         return (
-          <View className="flex-1">
+          <View>
             <Text className="text-2xl font-bold text-black text-center mb-4">
               Smoking History
             </Text>
@@ -139,7 +139,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
 
       case 2:
         return (
-          <View className="flex-1">
+          <View>
             <Text className="text-2xl font-bold text-black text-center mb-4">
               Daily Consumption
             </Text>
@@ -175,7 +175,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
 
       case 3:
         return (
-          <View className="flex-1">
+          <View>
             <Text className="text-2xl font-bold text-black text-center mb-4">
               Your Motivations
             </Text>
@@ -183,7 +183,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
               What drives you to quit smoking? (Select all that apply)
             </Text>
             
-            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <ScrollView className="max-h-80" showsVerticalScrollIndicator={false}>
               {MOTIVATION_OPTIONS.map((motivation) => (
                 <TouchableOpacity
                   key={motivation}
@@ -223,9 +223,9 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
           </Text>
           
           {/* Modern Progress Indicator */}
-          <View className="flex-row justify-between items-center">
+          <View className="w-full flex-row items-center">
             {[1, 2, 3].map((step, index) => (
-              <View key={step} className="flex-1 flex-row items-center">
+              <React.Fragment key={step}>
                 <View
                   className={`w-10 h-10 rounded-2xl items-center justify-center ${
                     step <= currentStep ? 'bg-white' : 'bg-white'
@@ -247,7 +247,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
                     style={{ opacity: step < currentStep ? 1 : 0.2 }}
                   />
                 )}
-              </View>
+              </React.Fragment>
             ))}
           </View>
         </View>
@@ -258,7 +258,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
         className="flex-1 px-6 -mt-6"
       >
         {/* Content Card */}
-        <View className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 flex-1">
+        <View className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
           {renderStep()}
 
           {/* Navigation Buttons */}
