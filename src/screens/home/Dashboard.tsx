@@ -15,7 +15,8 @@ import {
   Apple,
   Sparkles,
   Users,
-  Plus
+  Plus,
+  RotateCcw
 } from 'lucide-react-native';
 import { generateDashboardData } from '../../utils/dashboardData';
 import { 
@@ -286,6 +287,30 @@ const Dashboard: React.FC = () => {
             <Text className="text-red-500 font-medium text-center mt-4 leading-5">
               {dashboardData.motivationalMessage}
             </Text>
+            
+            {/* I Smoked Button */}
+            <TouchableOpacity
+              className="bg-red-500 rounded-2xl p-3 mt-6 flex-row items-center justify-center"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3
+              }}
+              onPress={() => Alert.alert(
+                'Reset Timer?',
+                'This will reset your smoke-free timer and deduct 10 points from your Aura score.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Reset', style: 'destructive', onPress: () => Alert.alert('Feature', 'Timer reset functionality will be implemented') }
+                ]
+              )}
+              activeOpacity={0.8}
+            >
+              <RotateCcw size={20} color="#ffffff" />
+              <Text className="text-white font-bold text-base ml-2">I Smoked</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -308,7 +333,7 @@ const Dashboard: React.FC = () => {
               <View className="w-10 h-10 bg-blue-200 rounded-xl items-center justify-center mb-3">
                 <DollarSign size={20} color="#3b82f6" />
               </View>
-              <Text className="text-2xl font-bold text-gray-900">${dashboardData.progress.moneySaved}</Text>
+              <Text className="text-2xl font-bold text-gray-900">₹ {dashboardData.progress.moneySaved}</Text>
               <Text className="text-gray-600 text-xs text-center">Total money saved</Text>
             </View>
 
@@ -369,66 +394,106 @@ const Dashboard: React.FC = () => {
           </View>
         </View>
 
-        {/* Daily Log */}
+        {/* Daily Activities */}
         <View className="px-6 mt-8">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-xl font-bold text-gray-900">Daily log</Text>
-            <TouchableOpacity className="bg-red-400 w-12 h-12 rounded-2xl items-center justify-center">
-              <Plus size={24} color="#ffffff" />
-            </TouchableOpacity>
+          {/* Header with light red background */}
+          <View className="bg-red-400 rounded-2xl p-4 mb-6" style={{ 
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3
+          }}>
+            <View className="flex-row justify-between items-center">
+              <View>
+                <Text className="text-white text-xl font-bold">Daily Activities</Text>
+                <Text className="text-white text-sm">Track your wellness journey</Text>
+              </View>
+              <TouchableOpacity className="bg-red-500 w-12 h-12 rounded-xl items-center justify-center">
+                <Plus size={24} color="#ffffff" />
+              </TouchableOpacity>
+            </View>
           </View>
           
           <View className="flex-row flex-wrap justify-between">
             {dashboardData.quickActions.map((action) => {
-              const getIcon = (actionId: string) => {
+              const getIconAndColor = (actionId: string) => {
                 switch (actionId) {
                   case 'gym':
-                    return <Dumbbell size={20} color="#ef4444" />;
+                    return { 
+                      icon: <Dumbbell size={22} color="#ffffff" />, 
+                      bgColor: '#eab308', // Yellow
+                      lightBg: 'bg-yellow-50'
+                    };
                   case 'healthy_meal':
-                    return <Apple size={20} color="#ef4444" />;
+                    return { 
+                      icon: <Apple size={22} color="#ffffff" />, 
+                      bgColor: '#10b981', // Emerald
+                      lightBg: 'bg-emerald-50'
+                    };
                   case 'skincare':
-                    return <Sparkles size={20} color="#ef4444" />;
+                    return { 
+                      icon: <Sparkles size={22} color="#ffffff" />, 
+                      bgColor: '#8b5cf6', // Purple
+                      lightBg: 'bg-purple-50'
+                    };
                   case 'event_social':
-                    return <Users size={20} color="#ef4444" />;
+                    return { 
+                      icon: <Users size={22} color="#ffffff" />, 
+                      bgColor: '#3b82f6', // Blue
+                      lightBg: 'bg-blue-50'
+                    };
                   default:
-                    return <Trophy size={20} color="#ef4444" />;
+                    return { 
+                      icon: <Trophy size={22} color="#ffffff" />, 
+                      bgColor: '#f59e0b', // Orange
+                      lightBg: 'bg-orange-50'
+                    };
                 }
               };
+
+              const { icon, bgColor, lightBg } = getIconAndColor(action.id);
 
               return (
                 <TouchableOpacity
                   key={action.id}
-                  className="bg-white rounded-2xl p-4 w-[48%] mb-4 shadow-md border border-gray-100"
+                  className={`${lightBg} rounded-2xl p-5 w-[48%] mb-4 border border-gray-100`}
+                  style={{
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.05,
+                    shadowRadius: 2,
+                    elevation: 1
+                  }}
                   onPress={() => Alert.alert('Activity', `Log ${action.title} (+${action.points} points)`)}
+                  activeOpacity={0.8}
                 >
-                  <View className="w-10 h-10 bg-red-100 rounded-xl items-center justify-center mb-3">
-                    {getIcon(action.id)}
+                  <View 
+                    className="w-12 h-12 rounded-xl items-center justify-center mb-4"
+                    style={{
+                      backgroundColor: bgColor,
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.1,
+                      shadowRadius: 3,
+                      elevation: 2
+                    }}
+                  >
+                    {icon}
                   </View>
-                  <Text className="text-gray-900 font-semibold">{action.title}</Text>
-                  <Text className="text-gray-500 text-sm">+{action.points} points</Text>
+                  <Text className="text-gray-900 font-bold text-base mb-1">{action.title}</Text>
+                  <View className="flex-row items-center">
+                    <Text className="text-emerald-600 text-sm font-semibold">+{action.points}</Text>
+                    <Text className="text-gray-500 text-sm ml-1">points</Text>
+                  </View>
                 </TouchableOpacity>
               );
             })}
           </View>
         </View>
 
-        {/* I Smoked Button */}
-        <View className="px-6 mt-8 mb-32">
-          <TouchableOpacity
-            className="bg-red-500 rounded-2xl p-4 shadow-lg"
-            onPress={() => Alert.alert(
-              'Reset Timer?',
-              'This will reset your smoke-free timer and deduct 10 points from your Aura score.',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Reset', style: 'destructive', onPress: () => Alert.alert('Feature', 'Timer reset functionality will be implemented') }
-              ]
-            )}
-          >
-            <Text className="text-white font-bold text-center text-lg">I Smoked</Text>
-            <Text className="text-red-100 text-center text-sm">-10 Aura Points</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Bottom spacing */}
+        <View className="mb-32" />
       </ScrollView>
 
       {/* Bottom Navigation */}
